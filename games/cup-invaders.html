@@ -69,7 +69,7 @@
     }
 
     .header{
-      background:linear-gradient(135deg, #24306d 0%, #3d5df5 56%, #ffe34d 100%);
+      background:linear-gradient(135deg, var(--orange) 0%, #ff9a63 52%, var(--yellow) 100%);
       border-bottom:4px solid #000;
       padding:12px 16px;
     }
@@ -695,7 +695,7 @@
     const PLAYER_SPEED = 260;
     const BONUS_MIN_DELAY = 5000;
     const BONUS_EXTRA_DELAY = 4500;
-    const FIRE_COOLDOWN = 520;
+    const FIRE_COOLDOWN = 370;
 
     let score = 0;
     let wave = 1;
@@ -887,7 +887,6 @@
 
       resizeGame();
       createPlayer();
-      spawnWave();
       updateHUD();
 
       introOverlay.style.display = showIntro ? "flex" : "none";
@@ -927,6 +926,7 @@
       playing = true;
       lastFrame = performance.now();
       gameStartedAt = lastFrame;
+      spawnWave();
       scheduleBonusRun();
       animationFrameId = requestAnimationFrame(gameLoop);
     }
@@ -1056,8 +1056,8 @@
 
       drawEnemies();
 
-      const playerRect = { x: playerX + 8, y: arenaH - 48, w: PLAYER_SIZE - 16, h: 28 };
-      const reachedPlayer = alive.some(enemy => intersects({ x: enemy.x, y: enemy.y, w: enemy.w, h: enemy.h }, playerRect));
+      const coffeeLine = arenaH - 54;
+      const reachedPlayer = alive.some(enemy => enemy.y + enemy.h >= coffeeLine);
       if (reachedPlayer) {
         endGame("advanced");
       }
