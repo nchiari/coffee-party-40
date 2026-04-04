@@ -109,13 +109,13 @@
     }
 
     .lead{
-      font-size:20px;
-      line-height:1.24;
+      font-size:22px;
+      line-height:1.22;
       font-weight:1000;
     }
 
     .support{
-      font-size:15px;
+      font-size:16px;
       line-height:1.45;
       font-weight:800;
     }
@@ -216,7 +216,7 @@
     .cherry-ball{
       position:absolute;
       left:50%;
-      top:48px;
+      top:40px;
       transform:translateX(-50%);
       font-size:30px;
     }
@@ -224,9 +224,9 @@
     .paddle{
       position:absolute;
       left:50%;
-      bottom:14px;
+      bottom:10px;
       width:96px;
-      height:20px;
+      height:22px;
       transform:translateX(-50%);
       border:4px solid #000;
       border-radius:999px;
@@ -240,11 +240,11 @@
       box-shadow:0 0 0 2px #000 inset;
     }
 
-    .maze-line.a{ left:14px; top:14px; width:82px; height:24px; }
-    .maze-line.b{ right:14px; top:14px; width:82px; height:24px; }
-    .maze-line.c{ left:18px; bottom:14px; width:76px; height:24px; }
-    .maze-line.d{ right:20px; bottom:14px; width:88px; height:24px; }
-    .maze-line.e{ left:50%; top:42px; width:28px; height:34px; transform:translateX(-50%); }
+    .maze-line.a{ left:24px; top:18px; width:62px; height:20px; }
+    .maze-line.b{ right:24px; top:18px; width:62px; height:20px; }
+    .maze-line.c{ left:28px; bottom:20px; width:54px; height:20px; }
+    .maze-line.d{ right:30px; bottom:20px; width:58px; height:20px; }
+    .maze-line.e{ left:50%; top:42px; width:24px; height:26px; transform:translateX(-50%); }
 
     .pellet{
       position:absolute;
@@ -255,12 +255,12 @@
       background:var(--yellow);
     }
 
-    .pellet.p1{ left:80px; top:58px; }
-    .pellet.p2{ left:136px; top:36px; }
-    .pellet.p3{ right:52px; bottom:32px; }
+    .pellet.p1{ left:86px; top:58px; }
+    .pellet.p2{ left:126px; top:34px; }
+    .pellet.p3{ right:60px; bottom:34px; }
 
-    .puck{ position:absolute; left:32px; top:50px; font-size:28px; }
-    .ghosty{ position:absolute; right:28px; top:50px; font-size:25px; }
+    .puck{ position:absolute; left:34px; top:50px; font-size:28px; }
+    .ghosty{ position:absolute; right:28px; top:48px; font-size:25px; }
 
     .bean-row{
       position:absolute;
@@ -287,25 +287,17 @@
       position:absolute;
       left:50%;
       bottom:12px;
-      width:56px;
-      height:28px;
+      width:44px;
+      height:30px;
       transform:translateX(-50%);
-      border:4px solid #000;
-      border-radius:16px 16px 10px 10px;
-      background:linear-gradient(180deg, #7ce577 0%, #24b83f 100%);
+      font-size:30px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .ship::before{
-      content:"";
-      position:absolute;
-      left:50%;
-      top:-12px;
-      width:11px;
-      height:18px;
-      transform:translateX(-50%);
-      border:3px solid #000;
-      border-bottom:none;
-      background:var(--yellow);
+      content:"☕";
     }
 
     .card-body{
@@ -457,8 +449,8 @@
 
       <div class="body">
         <div class="intro">
-          <p class="lead">Hola, te saluda Nico. Quiero invitarte a mi festejo de 40 y, para acceder a la invitación, tenés que completar al menos 1 de estos 4 juegos.</p>
-          <p class="support">Elegí el que más te guste, jugá una partida y después volvés acá. Si ya desbloqueaste la invitación, arriba te queda el acceso directo para verla otra vez.</p>
+          <p class="lead">Hola, soy Nico, y quiero invitarte a festejar mis 40 con una pequeña misión cafetera: para abrir la invitación, tenés que superar al menos 1 de estos 4 juegos.</p>
+          <p class="support">Elegí tu favorito, jugá una partida y volvés acá para descubrir todos los detalles. Si ya la desbloqueaste, arriba te espera el botón para verla cuando quieras.</p>
         </div>
 
         <div class="grid">
@@ -478,7 +470,7 @@
                   <div class="card-title">Catch-A-Bean</div>
                   <div id="record-catch" class="record">Récord: 0</div>
                 </div>
-                <div class="card-copy">Mové la taza, atrapá la mayor cantidad de granos posible y desbloqueá la invitación al terminar la partida.</div>
+                <div class="card-copy">Atrapá granos a toda velocidad y sumá puntos en una partida corta, simple y bien adictiva.</div>
               </div>
             </article>
           </a>
@@ -501,7 +493,7 @@
                   <div class="card-title">Arabicanoid</div>
                   <div id="record-arabicanoid" class="record">Récord: 0</div>
                 </div>
-                <div class="card-copy">Rebotá la cereza arabica, rompé bloques de colores y sumá puntos con una versión amable del clásico.</div>
+                <div class="card-copy">Rebotá la cereza arabica, rompé bloques y cazá cookies sorpresa para empujar tu récord.</div>
               </div>
             </article>
           </a>
@@ -514,7 +506,7 @@
                 <div class="maze-line c"></div>
                 <div class="maze-line d"></div>
                 <div class="maze-line e"></div>
-                <div class="puck">🥠</div>
+                <div class="puck">☕</div>
                 <div class="pellet p1"></div>
                 <div class="pellet p2"></div>
                 <div class="pellet p3"></div>
@@ -525,7 +517,7 @@
                   <div class="card-title">Puck-Man</div>
                   <div id="record-puckman" class="record">Récord: 0</div>
                 </div>
-                <div class="card-copy">Guiá la galletita por el laberinto, comé puntitos, agarrá cookies y escapá de los fantasmas.</div>
+                <div class="card-copy">Metete en el laberinto, juntá puntos, cazá cookies y escapá de los fantasmas clásicos.</div>
               </div>
             </article>
           </a>
@@ -546,7 +538,7 @@
                   <div class="card-title">Bean Invaders</div>
                   <div id="record-invaders" class="record">Récord: 0</div>
                 </div>
-                <div class="card-copy">Defendé la Coffee Party desde tu tacita disparando a una invasión alien en versión arcade express.</div>
+                <div class="card-copy">Defendé la Coffee Party oleada tras oleada y bajá aliens antes de que alcancen tu taza.</div>
               </div>
             </article>
           </a>

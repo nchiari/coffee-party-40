@@ -258,18 +258,6 @@
       background:rgba(255,255,255,.45);
     }
 
-    .saucer-handle{
-      position:absolute;
-      right:-8px;
-      top:5px;
-      width:18px;
-      height:16px;
-      border:4px solid #000;
-      border-left:none;
-      border-radius:0 18px 18px 0;
-      background:#fff6de;
-    }
-
     .ball{
       position:absolute;
       width:38px;
@@ -401,32 +389,23 @@
       border:3px solid #000;
       border-radius:18px;
       background:#fff;
-      padding:12px;
+      padding:12px 12px 10px;
       box-shadow:4px 4px 0 #000;
     }
 
-    .howto{
+    .howto-title{
       margin-top:12px;
-      border:3px solid #000;
-      border-radius:16px;
-      background:#ffef9f;
-      padding:10px;
-      box-shadow:3px 3px 0 #000;
-    }
-
-    .howto p,
-    .white-card p{
-      margin:8px 0 0;
-      font-size:13px;
-      line-height:1.4;
-      font-weight:800;
-    }
-
-    .small-up{
       font-size:10px;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.1em;
+    }
+
+    .white-card p{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.4;
+      font-weight:800;
     }
 
     .big-green{
@@ -617,7 +596,7 @@
 
     .actions{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:1fr;
       gap:8px;
       margin-top:12px;
     }
@@ -696,7 +675,6 @@
 
         <div id="paddle" class="paddle">
           <div class="saucer"></div>
-          <div class="saucer-handle"></div>
         </div>
 
         <div id="ball" class="ball">🍒</div>
@@ -720,13 +698,10 @@
         <div class="white-card">
           <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 🍒</div>
           <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
-
-          <div class="howto">
-            <div class="small-up">Cómo se juega</div>
-            <p>Mové la barra con las flechas o arrastrando de forma táctil sobre la cancha.</p>
-            <p>La partida arranca sola después del countdown. Si perdés una vida, tocá el cartel para relanzar la cereza arabica 🍒.</p>
-            <p>La partida es rápida y amable: aunque se escape, la invitación igual se desbloquea.</p>
-          </div>
+          <div class="howto-title">Cómo se juega</div>
+          <p>Mové la barra con las flechas o arrastrando la barra de forma táctil.</p>
+          <p>La partida arranca sola después del countdown. Si perdés una vida, tocá el cartel para relanzar la cereza arabica 🍒.</p>
+          <p>Estate atento a la cookie que puede aparecer: si la agarrás, sumás puntos extra.</p>
         </div>
 
         <button id="playBtn" class="btn big-green">Jugar</button>
@@ -824,17 +799,17 @@
     const PADDLE_H = 26;
     const BALL_SIZE = 38;
     const BRICK_COLS = 6;
-    const BRICK_ROWS = 4;
+    const BRICK_ROWS = 5;
     const BRICK_H = 24;
     const BRICK_GAP_X = 5;
     const BRICK_GAP_Y = 5;
     const TOP_OFFSET = 22;
     const SIDE_PADDING = 18;
-    const PADDLE_BOTTOM = 104;
+    const PADDLE_BOTTOM = 74;
     const LIVES_START = 3;
     const BASE_BALL_SPEED = 285;
-    const MAX_BALL_SPEED = 355;
-    const BONUS_DROP_SPEED = 245;
+    const MAX_BALL_SPEED = 390;
+    const BONUS_DROP_SPEED = 315;
 
     let best = Number(localStorage.getItem("coffee-breakout-best") || 0);
     let score = 0;
@@ -909,7 +884,7 @@
       const total = BRICK_ROWS * BRICK_COLS;
       const remaining = getRemainingBricks() || total;
       const clearedRatio = 1 - remaining / total;
-      return Math.min(MAX_BALL_SPEED, BASE_BALL_SPEED + clearedRatio * 70);
+      return Math.min(MAX_BALL_SPEED, BASE_BALL_SPEED + clearedRatio * 105);
     }
 
     function normalizeBallSpeed(target = getTargetBallSpeed()) {
@@ -993,9 +968,6 @@
 
           const el = document.createElement("div");
           el.className = "brick " + classes[(row + col) % classes.length];
-          if (bonusSlots.has(brickIndex)) {
-            el.textContent = "🍪";
-          }
           el.style.left = x + "px";
           el.style.top = y + "px";
           el.style.width = brickW + "px";
@@ -1291,6 +1263,7 @@
         loseLife();
       }
 
+      normalizeBallSpeed();
       drawBall();
       drawBonusDrops();
       animationFrameId = requestAnimationFrame(gameLoop);

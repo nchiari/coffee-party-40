@@ -380,32 +380,23 @@
       border:3px solid #000;
       border-radius:18px;
       background:#fff;
-      padding:12px;
+      padding:12px 12px 10px;
       box-shadow:4px 4px 0 #000;
     }
 
-    .howto{
+    .howto-title{
       margin-top:12px;
-      border:3px solid #000;
-      border-radius:16px;
-      background:#ffef9f;
-      padding:10px;
-      box-shadow:3px 3px 0 #000;
-    }
-
-    .howto p,
-    .white-card p{
-      margin:8px 0 0;
-      font-size:13px;
-      line-height:1.4;
-      font-weight:800;
-    }
-
-    .small-up{
       font-size:10px;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.1em;
+    }
+
+    .white-card p{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.4;
+      font-weight:800;
     }
 
     .big-green{
@@ -649,7 +640,7 @@
         <div style="flex:1">
           <div class="title">Catch-A-Bean</div>
         </div>
-        <div class="icon-badge">☕</div>
+        <div class="icon-badge">🫘</div>
       </div>
       <div class="subtitle">Mové la taza y atrapá granos de café para desbloquear la invitación.</div>
     </div>
@@ -715,22 +706,18 @@
     <div id="introOverlay" class="overlay">
       <div class="panel">
         <div class="row">
-          <div class="icon-badge">☕</div>
+          <div class="icon-badge">🫘</div>
           <div>
             <h2>Coffee Party</h2>
           </div>
         </div>
 
         <div class="white-card">
-          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote ☕</div>
+          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 🫘</div>
           <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
-
-          <div class="howto">
-            <div class="small-up">Cómo se juega</div>
-            <p>Tocá los botones o arrastrá sobre la cancha para mover la taza a izquierda o derecha.</p>
-            <p>Atrapá la mayor cantidad de granos de café que puedas antes de que se termine el tiempo.</p>
-            <p>Cuando termina la partida, se desbloquea un regalito. Tocalo para abrir la invitación.</p>
-          </div>
+          <div class="howto-title">Cómo se juega</div>
+          <p>Tocá los botones o arrastrá la taza para moverla a izquierda o derecha.</p>
+          <p>Atrapá la mayor cantidad de granos de café que puedas antes de que se termine el tiempo.</p>
         </div>
 
         <button id="playBtn" class="btn big-green">Jugar</button>
@@ -833,6 +820,7 @@
     let started = false;
     let finished = false;
     let lane = 1;
+    let playerX = lanes[lane];
     let score = 0;
     let timeLeft = GAME_DURATION;
     let best = Number(localStorage.getItem("coffee-party-best") || 0);
@@ -846,7 +834,7 @@
     updatePlayer();
 
     function updatePlayer() {
-      player.style.left = lanes[lane] + "%";
+      player.style.left = playerX + "%";
     }
 
     function renderBeans() {
@@ -856,7 +844,7 @@
         const el = document.createElement("div");
         el.className = "bean";
         el.textContent = "🫘";
-        el.style.left = lanes[bean.lane] + "%";
+        el.style.left = bean.x + "%";
         el.style.top = bean.y + "%";
         arena.appendChild(el);
       });
@@ -875,6 +863,7 @@
       finished = false;
       countdownActive = false;
       lane = 1;
+      playerX = lanes[lane];
       score = 0;
       timeLeft = GAME_DURATION;
       beans = [];
@@ -930,10 +919,12 @@
 
     function spawnBean() {
       if (beans.length >= MAX_BEANS_ON_SCREEN) return;
+      const beanLane = Math.floor(Math.random() * 3);
 
       beans.push({
         id: Math.random().toString(36).slice(2, 9),
-        lane: Math.floor(Math.random() * 3),
+        lane: beanLane,
+        x: lanes[beanLane],
         y: PIPE_EXIT_Y,
         speed: BEAN_SPEED_MIN + Math.random() * (BEAN_SPEED_MAX - BEAN_SPEED_MIN)
       });
@@ -964,7 +955,7 @@
       for (const bean of beans) {
         bean.y += bean.speed * delta;
 
-        const sameLane = bean.lane === lane;
+        const sameLane = Math.abs(bean.x - playerX) <= 12;
         const insideCatchZone = bean.y >= PLAYER_Y - 6 && bean.y <= PLAYER_Y + 3;
 
         if (sameLane && insideCatchZone) {
@@ -1007,11 +998,13 @@
 
     function moveLeft() {
       if (lane > 0) lane -= 1;
+      playerX = lanes[lane];
       updatePlayer();
     }
 
     function moveRight() {
       if (lane < 2) lane += 1;
+      playerX = lanes[lane];
       updatePlayer();
     }
 
@@ -1037,8 +1030,12 @@
     function moveFromPointer(clientX) {
       const rect = arena.getBoundingClientRect();
       const relativeX = clientX - rect.left;
-      const segment = rect.width / 3;
-      lane = Math.max(0, Math.min(2, Math.floor(relativeX / segment)));
+      const clamped = Math.max(0, Math.min(rect.width, relativeX));
+      playerX = 12 + (clamped / rect.width) * 76;
+      const nearestLane = lanes.reduce((bestIndex, laneValue, index) => {
+        return Math.abs(laneValue - playerX) < Math.abs(lanes[bestIndex] - playerX) ? index : bestIndex;
+      }, 0);
+      lane = nearestLane;
       updatePlayer();
     }
 

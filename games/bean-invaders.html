@@ -320,32 +320,23 @@
       border:3px solid #000;
       border-radius:18px;
       background:#fff;
-      padding:12px;
+      padding:12px 12px 10px;
       box-shadow:4px 4px 0 #000;
     }
 
-    .howto{
+    .howto-title{
       margin-top:12px;
-      border:3px solid #000;
-      border-radius:16px;
-      background:#ffef9f;
-      padding:10px;
-      box-shadow:3px 3px 0 #000;
-    }
-
-    .howto p,
-    .white-card p{
-      margin:8px 0 0;
-      font-size:13px;
-      line-height:1.4;
-      font-weight:800;
-    }
-
-    .small-up{
       font-size:10px;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.1em;
+    }
+
+    .white-card p{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.4;
+      font-weight:800;
     }
 
     .big-green{
@@ -603,15 +594,11 @@
 
         <div class="white-card">
           <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 👾</div>
-          <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
-
-          <div class="howto">
-            <div class="small-up">Cómo se juega</div>
-            <p>Mové la tacita ☕ a izquierda o derecha.</p>
-            <p>Usá el botón central para disparar y limpiar la oleada alien 👾.</p>
-            <p>A partir de los 5 segundos puede cruzar una cookie 🍪 arriba: si le pegás, suma 20 puntos.</p>
-            <p>Si limpiás la oleada, genial. Si los aliens avanzan demasiado, igual se desbloquea la invitación.</p>
-          </div>
+          <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida y desbloqueala al final.</p>
+          <div class="howto-title">Cómo se juega</div>
+          <p>Mové la tacita ☕ a izquierda o derecha.</p>
+          <p>Usá el botón central para disparar y limpiar la oleada alien 👾.</p>
+          <p>A partir de los 5 segundos puede cruzar una cookie 🍪 arriba: si le pegás, suma 20 puntos.</p>
         </div>
 
         <button id="playBtn" class="btn big-green">Jugar</button>
@@ -702,12 +689,13 @@
     const centerBtn = document.getElementById("centerBtn");
     const rightBtn = document.getElementById("rightBtn");
 
-    const PLAYER_SIZE = 58;
+    const PLAYER_SIZE = 60;
     const ENEMY_SIZE = 32;
     const BEAM_SPEED = 420;
     const PLAYER_SPEED = 260;
     const BONUS_MIN_DELAY = 5000;
     const BONUS_EXTRA_DELAY = 4500;
+    const FIRE_COOLDOWN = 520;
 
     let score = 0;
     let wave = 1;
@@ -732,6 +720,7 @@
     let playerEl = null;
     let gameStartedAt = 0;
     let bonusSpawnAt = Infinity;
+    let lastShotAt = 0;
 
     bestEl.textContent = best;
 
@@ -826,13 +815,12 @@
       el.className = "bonus";
       el.textContent = "🍪";
       arena.appendChild(el);
-      const fromLeft = Math.random() > 0.5;
       bonus = {
-        x: fromLeft ? -32 : arenaW + 4,
+        x: arenaW + 4,
         y: 18 + Math.random() * 20,
         w: 28,
         h: 28,
-        dir: fromLeft ? 1 : -1,
+        dir: -1,
         speed: 122,
         el
       };
@@ -847,6 +835,9 @@
     }
 
     function fireBeam() {
+      const now = performance.now();
+      if (now - lastShotAt < FIRE_COOLDOWN) return;
+      lastShotAt = now;
       const el = document.createElement("div");
       el.className = "beam";
       arena.appendChild(el);
@@ -888,6 +879,7 @@
       playerX = 0;
       gameStartedAt = 0;
       bonusSpawnAt = Infinity;
+      lastShotAt = 0;
 
       removeAllProjectiles();
       enemies.forEach(enemy => enemy.el.remove());
@@ -952,11 +944,11 @@
       bestEl.textContent = best;
 
       if (reason === "cleared") {
-        giftScore.textContent = `Hiciste ${score} puntos y frenaste la invasión`;
+        giftScore.textContent = `Hiciste ${score} puntos y aguantaste otra oleada`;
         postScore.textContent = `Defendiste la Coffee Party con ${score} puntos`;
       } else {
         giftScore.textContent = `Hiciste ${score} puntos y abriste la invitación`;
-        postScore.textContent = `Los aliens avanzaron, pero igual desbloqueaste la invitación con ${score} puntos`;
+        postScore.textContent = `Los aliens llegaron hasta tu taza, pero igual desbloqueaste la invitación con ${score} puntos`;
       }
 
       giftOverlay.style.display = "flex";
@@ -1033,14 +1025,14 @@
     function updateEnemies(delta) {
       const alive = enemies.filter(enemy => enemy.alive);
       if (!alive.length) {
-        if (!waveCleared && wave < 2) {
-          wave += 1;
-          updateHUD();
-          spawnWave();
-          scheduleBonusRun();
-          return;
+        wave += 1;
+        if (bonus) {
+          bonus.el.remove();
+          bonus = null;
         }
-        endGame("cleared");
+        updateHUD();
+        spawnWave();
+        scheduleBonusRun();
         return;
       }
 
@@ -1064,8 +1056,9 @@
 
       drawEnemies();
 
-      const reachedBottom = alive.some(enemy => enemy.y + enemy.h >= arenaH - 72);
-      if (reachedBottom) {
+      const playerRect = { x: playerX + 8, y: arenaH - 48, w: PLAYER_SIZE - 16, h: 28 };
+      const reachedPlayer = alive.some(enemy => intersects({ x: enemy.x, y: enemy.y, w: enemy.w, h: enemy.h }, playerRect));
+      if (reachedPlayer) {
         endGame("advanced");
       }
     }
