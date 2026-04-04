@@ -287,7 +287,7 @@
 
     .controls{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(2,1fr);
       gap:8px;
       margin-top:10px;
     }
@@ -326,11 +326,6 @@
       font-weight:1000;
       line-height:1;
       letter-spacing:-1px;
-    }
-
-    .control.center{
-      background:var(--green);
-      font-size:16px;
     }
 
     .overlay{
@@ -606,6 +601,10 @@
       margin-top:12px;
     }
 
+    .actions .btn{
+      font-size:16px;
+    }
+
     .green{ background:var(--green); }
     .pink{ background:var(--pink); }
 
@@ -709,7 +708,6 @@
 
       <div class="controls">
         <button id="leftBtn" class="control">◀</button>
-        <button id="centerBtn" class="control center">Centro</button>
         <button id="rightBtn" class="control">▶</button>
       </div>
     </div>
@@ -729,7 +727,7 @@
 
           <div class="howto">
             <div class="small-up">Cómo se juega</div>
-            <p>Tocá los botones para mover la taza a izquierda o derecha.</p>
+            <p>Tocá los botones o arrastrá sobre la cancha para mover la taza a izquierda o derecha.</p>
             <p>Atrapá la mayor cantidad de granos de café que puedas antes de que se termine el tiempo.</p>
             <p>Cuando termina la partida, se desbloquea un regalito. Tocalo para abrir la invitación.</p>
           </div>
@@ -806,9 +804,9 @@
     const GAME_DURATION = 20;
     const PLAYER_Y = 78;
     const MAX_BEANS_ON_SCREEN = 5;
-    const SPAWN_INTERVAL = 560;
-    const BEAN_SPEED_MIN = 24;
-    const BEAN_SPEED_MAX = 34;
+    const SPAWN_INTERVAL = 500;
+    const BEAN_SPEED_MIN = 30;
+    const BEAN_SPEED_MAX = 42;
     const PIPE_EXIT_Y = 20;
 
     const arena = document.getElementById("arena");
@@ -824,7 +822,6 @@
     const inviteOverlay = document.getElementById("inviteOverlay");
 
     const playBtn = document.getElementById("playBtn");
-    const centerBtn = document.getElementById("centerBtn");
     const leftBtn = document.getElementById("leftBtn");
     const rightBtn = document.getElementById("rightBtn");
     const giftBtn = document.getElementById("giftBtn");
@@ -895,7 +892,6 @@
       giftOverlay.style.display = "none";
       inviteOverlay.style.display = "none";
 
-      centerBtn.textContent = "Centro";
     }
 
     function startCountdown() {
@@ -928,7 +924,6 @@
     function startGame() {
       started = true;
       finished = false;
-      centerBtn.textContent = "Centro";
       lastFrame = performance.now();
       animationFrameId = requestAnimationFrame(gameLoop);
     }
@@ -999,8 +994,6 @@
 
       started = false;
       finished = true;
-      centerBtn.textContent = "Jugar";
-
       if (score > best) {
         best = score;
         localStorage.setItem("coffee-party-best", best);
@@ -1024,15 +1017,6 @@
 
     playBtn.addEventListener("click", startCountdown);
 
-    centerBtn.addEventListener("click", () => {
-      if (started) {
-        lane = 1;
-        updatePlayer();
-      } else if (!countdownActive) {
-        startCountdown();
-      }
-    });
-
     leftBtn.addEventListener("click", moveLeft);
     rightBtn.addEventListener("click", moveRight);
 
@@ -1048,6 +1032,31 @@
       if (!started) return;
       if (e.key === "ArrowLeft") moveLeft();
       if (e.key === "ArrowRight") moveRight();
+    });
+
+    function moveFromPointer(clientX) {
+      const rect = arena.getBoundingClientRect();
+      const relativeX = clientX - rect.left;
+      const segment = rect.width / 3;
+      lane = Math.max(0, Math.min(2, Math.floor(relativeX / segment)));
+      updatePlayer();
+    }
+
+    let touchDragging = false;
+
+    arena.addEventListener("pointerdown", (e) => {
+      if (!started) return;
+      touchDragging = true;
+      moveFromPointer(e.clientX);
+    });
+
+    arena.addEventListener("pointermove", (e) => {
+      if (!started || !touchDragging) return;
+      moveFromPointer(e.clientX);
+    });
+
+    window.addEventListener("pointerup", () => {
+      touchDragging = false;
     });
 
     resetState(true);
