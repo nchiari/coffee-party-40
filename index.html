@@ -468,7 +468,7 @@
 
       <div class="body">
         <div class="intro">
-          <p class="lead">Hola, soy Nico, y quiero invitarte a festejar mis 40 con una pequeña misión cafetera: para abrir la invitación, tenés que superar al menos 1 de estos 4 juegos.</p>
+          <p class="lead">Hola, soy Nico, y quiero invitarte a festejar mis 40 con una pequeña misión cafetera: para abrir la invitación, tenés que superar al menos 1 de estos 3 juegos.</p>
           <p class="support">Elegí tu favorito, jugá una partida y volvés acá para descubrir todos los detalles. Si ya la desbloqueaste, arriba te espera el botón para verla cuando quieras.</p>
         </div>
 
@@ -513,32 +513,6 @@
                   <div id="record-arabicanoid" class="record">Récord: 0</div>
                 </div>
                 <div class="card-copy">Rebotá la cereza arabica, rompé bloques y cazá cookies sorpresa para empujar tu récord.</div>
-              </div>
-            </article>
-          </a>
-
-          <a class="game-link" href="games/puck-man.html">
-            <article class="game-card">
-              <div class="thumb puckman">
-                <div class="maze-line a"></div>
-                <div class="maze-line b"></div>
-                <div class="maze-line c"></div>
-                <div class="maze-line d"></div>
-                <div class="maze-line e"></div>
-                <div class="maze-line f"></div>
-                <div class="maze-line g"></div>
-                <div class="puck">☕</div>
-                <div class="pellet p1"></div>
-                <div class="pellet p2"></div>
-                <div class="pellet p3"></div>
-                <div class="ghosty">😈</div>
-              </div>
-              <div class="card-body">
-                <div class="title-row">
-                  <div class="card-title">Puck-Man</div>
-                  <div id="record-puckman" class="record">Récord: 0</div>
-                </div>
-                <div class="card-copy">Metete en el laberinto, juntá puntos, cazá cookies y escapá de los fantasmas clásicos.</div>
               </div>
             </article>
           </a>
@@ -596,7 +570,6 @@
     const recordMap = {
       "record-catch": Number(localStorage.getItem("coffee-party-best") || 0),
       "record-arabicanoid": Number(localStorage.getItem("coffee-breakout-best") || 0),
-      "record-puckman": Number(localStorage.getItem("coffee-pacman-best") || 0),
       "record-invaders": Number(localStorage.getItem("cup-invaders-best") || localStorage.getItem("bean-invaders-best") || 0)
     };
 
