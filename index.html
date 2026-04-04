@@ -269,16 +269,18 @@
       display:grid;
       grid-template-columns:repeat(5,1fr);
       gap:7px;
+      place-items:center;
     }
 
     .bean-row.r1{ top:16px; }
     .bean-row.r2{ top:48px; }
 
     .bean-dot{
-      height:14px;
-      border:3px solid #000;
-      border-radius:999px;
-      background:#ffd95e;
+      width:100%;
+      text-align:center;
+      font-size:16px;
+      line-height:1;
+      filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25));
     }
 
     .ship{
@@ -530,12 +532,12 @@
 
           <a class="game-link" href="games/bean-invaders.html">
             <article class="game-card">
-              <div class="thumb invaders">
+                <div class="thumb invaders">
                 <div class="bean-row r1">
-                  <div class="bean-dot"></div><div class="bean-dot"></div><div class="bean-dot"></div><div class="bean-dot"></div><div class="bean-dot"></div>
+                  <div class="bean-dot">👾</div><div class="bean-dot">👾</div><div class="bean-dot">👾</div><div class="bean-dot">👾</div><div class="bean-dot">👾</div>
                 </div>
                 <div class="bean-row r2">
-                  <div class="bean-dot"></div><div class="bean-dot"></div><div class="bean-dot"></div><div class="bean-dot"></div><div class="bean-dot"></div>
+                  <div class="bean-dot">👾</div><div class="bean-dot">👾</div><div class="bean-dot">👾</div><div class="bean-dot">👾</div><div class="bean-dot">👾</div>
                 </div>
                 <div class="ship"></div>
               </div>
@@ -544,7 +546,7 @@
                   <div class="card-title">Bean Invaders</div>
                   <div id="record-invaders" class="record">Récord: 0</div>
                 </div>
-                <div class="card-copy">Defendé la Coffee Party desde tu tacita disparando a una invasión de granos rebeldes en versión arcade express.</div>
+                <div class="card-copy">Defendé la Coffee Party desde tu tacita disparando a una invasión alien en versión arcade express.</div>
               </div>
             </article>
           </a>

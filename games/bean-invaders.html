@@ -181,12 +181,13 @@
     }
 
     .beam{
-      width:4px;
-      height:18px;
-      border:2px solid #000;
+      width:8px;
+      height:28px;
+      border:3px solid #000;
       border-radius:999px;
       background:var(--yellow);
-      box-shadow:2px 2px 0 rgba(0,0,0,.18);
+      box-shadow:0 0 0 2px rgba(255,227,77,.28),2px 2px 0 rgba(0,0,0,.18);
+      z-index:2;
     }
 
     .player{
@@ -263,7 +264,7 @@
     }
 
     .control.center{
-      background:var(--green);
+      background:var(--yellow);
       font-size:15px;
     }
 
@@ -561,9 +562,9 @@
         <div style="flex:1">
           <div class="title">Bean Invaders</div>
         </div>
-        <div class="icon-badge">🫘</div>
+        <div class="icon-badge">👾</div>
       </div>
-      <div class="subtitle">Mové tu tacita ☕, dispará rayitos y frená la invasión de granos 🫘 para desbloquear la invitación.</div>
+      <div class="subtitle">Mové tu tacita ☕, dispará desde el botón central y frená la invasión alien 👾 para desbloquear la invitación.</div>
     </div>
 
     <div class="stats">
@@ -582,13 +583,11 @@
     </div>
 
     <div class="game-wrap">
-      <div id="arena" class="arena">
-        <div id="launchHint" class="launch-hint">Tocá para arrancar</div>
-      </div>
+      <div id="arena" class="arena"></div>
 
       <div class="controls">
         <button id="leftBtn" class="control">◀</button>
-        <button id="centerBtn" class="control center">Centro</button>
+        <button id="centerBtn" class="control center">Disparo</button>
         <button id="rightBtn" class="control">▶</button>
       </div>
     </div>
@@ -596,21 +595,22 @@
     <div id="introOverlay" class="overlay">
       <div class="panel">
         <div class="row">
-          <div class="icon-badge">🫘</div>
+          <div class="icon-badge">👾</div>
           <div>
             <h2>Coffee Party</h2>
           </div>
         </div>
 
         <div class="white-card">
-          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 🫘</div>
+          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 👾</div>
           <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
 
           <div class="howto">
             <div class="small-up">Cómo se juega</div>
             <p>Mové la tacita ☕ a izquierda o derecha.</p>
-            <p>Dispara sola rayitos, así en mobile solo tenés que esquivar y apuntar.</p>
-            <p>Si limpiás la oleada, genial. Si los granos 🫘 avanzan demasiado, igual se desbloquea la invitación.</p>
+            <p>Usá el botón central para disparar y limpiar la oleada alien 👾.</p>
+            <p>A partir de los 5 segundos puede cruzar una cookie 🍪 arriba: si le pegás, suma 20 puntos.</p>
+            <p>Si limpiás la oleada, genial. Si los aliens avanzan demasiado, igual se desbloquea la invitación.</p>
           </div>
         </div>
 
@@ -681,7 +681,6 @@
 
   <script>
     const arena = document.getElementById("arena");
-    const launchHint = document.getElementById("launchHint");
 
     const scoreEl = document.getElementById("score");
     const waveEl = document.getElementById("wave");
@@ -705,10 +704,10 @@
 
     const PLAYER_SIZE = 58;
     const ENEMY_SIZE = 32;
-    const BEAM_SPEED = 360;
+    const BEAM_SPEED = 420;
     const PLAYER_SPEED = 260;
-    const TARGET_SCORE = 200;
-    const AUTO_FIRE_MS = 430;
+    const BONUS_MIN_DELAY = 5000;
+    const BONUS_EXTRA_DELAY = 4500;
 
     let score = 0;
     let wave = 1;
@@ -723,15 +722,16 @@
     let arenaH = 0;
     let moveDir = 0;
     let playerX = 0;
-    let autoFireTimer = 0;
     let bonus = null;
     let enemies = [];
     let beams = [];
     let enemyDir = 1;
     let enemyStepDown = 18;
-    let enemyBaseSpeed = 20;
+    let enemyBaseSpeed = 34;
     let waveCleared = false;
     let playerEl = null;
+    let gameStartedAt = 0;
+    let bonusSpawnAt = Infinity;
 
     bestEl.textContent = best;
 
@@ -786,7 +786,7 @@
     function makeEnemy(x, y) {
       const el = document.createElement("div");
       el.className = "enemy";
-      el.textContent = "🫘";
+      el.textContent = "👾";
       arena.appendChild(el);
       return { x, y, w: ENEMY_SIZE, h: ENEMY_SIZE, alive: true, el };
     }
@@ -796,13 +796,12 @@
       enemies = [];
       waveCleared = false;
       enemyDir = 1;
-      autoFireTimer = 0;
       bonus = null;
 
-      const cols = 5;
-      const rows = 3;
-      const gapX = 18;
-      const gapY = 16;
+      const cols = 6;
+      const rows = 4;
+      const gapX = 12;
+      const gapY = 12;
       const totalWidth = cols * ENEMY_SIZE + (cols - 1) * gapX;
       const startX = Math.max(20, Math.floor((arenaW - totalWidth) / 2));
       const startY = 26 + (wave - 1) * 4;
@@ -817,16 +816,24 @@
       }
     }
 
+    function scheduleBonusRun() {
+      bonusSpawnAt = performance.now() + BONUS_MIN_DELAY + Math.random() * BONUS_EXTRA_DELAY;
+    }
+
     function spawnBonus() {
-      if (bonus || Math.random() > 0.16) return;
+      if (bonus) return;
       const el = document.createElement("div");
       el.className = "bonus";
       el.textContent = "🍪";
       arena.appendChild(el);
+      const fromLeft = Math.random() > 0.5;
       bonus = {
-        x: Math.random() * (arenaW - 40) + 10,
-        y: 40,
-        speed: 66,
+        x: fromLeft ? -32 : arenaW + 4,
+        y: 18 + Math.random() * 20,
+        w: 28,
+        h: 28,
+        dir: fromLeft ? 1 : -1,
+        speed: 122,
         el
       };
     }
@@ -844,10 +851,10 @@
       el.className = "beam";
       arena.appendChild(el);
       beams.push({
-        x: playerX + PLAYER_SIZE / 2 - 2,
-        y: arenaH - 58,
-        w: 4,
-        h: 18,
+        x: playerX + PLAYER_SIZE / 2 - 4,
+        y: arenaH - 68,
+        w: 8,
+        h: 28,
         el
       });
     }
@@ -879,7 +886,8 @@
       countdownActive = false;
       moveDir = 0;
       playerX = 0;
-      autoFireTimer = 0;
+      gameStartedAt = 0;
+      bonusSpawnAt = Infinity;
 
       removeAllProjectiles();
       enemies.forEach(enemy => enemy.el.remove());
@@ -894,7 +902,6 @@
       countdownOverlay.style.display = "none";
       giftOverlay.style.display = "none";
       inviteOverlay.style.display = "none";
-      launchHint.classList.remove("hidden");
     }
 
     function startCountdown() {
@@ -927,7 +934,8 @@
     function startGame() {
       playing = true;
       lastFrame = performance.now();
-      launchHint.classList.add("hidden");
+      gameStartedAt = lastFrame;
+      scheduleBonusRun();
       animationFrameId = requestAnimationFrame(gameLoop);
     }
 
@@ -936,7 +944,6 @@
       animationFrameId = null;
       playing = false;
       finished = true;
-      launchHint.classList.add("hidden");
 
       if (score > best) {
         best = score;
@@ -949,7 +956,7 @@
         postScore.textContent = `Defendiste la Coffee Party con ${score} puntos`;
       } else {
         giftScore.textContent = `Hiciste ${score} puntos y abriste la invitación`;
-        postScore.textContent = `Los granos avanzaron, pero igual desbloqueaste la invitación con ${score} puntos`;
+        postScore.textContent = `Los aliens avanzaron, pero igual desbloqueaste la invitación con ${score} puntos`;
       }
 
       giftOverlay.style.display = "flex";
@@ -964,42 +971,17 @@
       );
     }
 
-    function clearLowestRow() {
-      const alive = enemies.filter(enemy => enemy.alive);
-      if (!alive.length) return;
-
-      const maxY = Math.max(...alive.map(enemy => enemy.y));
-      alive.forEach(enemy => {
-        if (enemy.y === maxY) {
-          enemy.alive = false;
-          enemy.el.remove();
-          score += 12;
-        }
-      });
-      flashArena();
-      updateHUD();
-    }
-
     function updateBonus(delta) {
       if (!bonus) return;
 
-      bonus.y += bonus.speed * delta;
+      bonus.x += bonus.dir * bonus.speed * delta;
       bonus.el.style.left = bonus.x + "px";
       bonus.el.style.top = bonus.y + "px";
 
-      const bonusRect = { x: bonus.x, y: bonus.y, w: 28, h: 28 };
-      const playerRect = { x: playerX + 8, y: arenaH - 46, w: PLAYER_SIZE - 16, h: 28 };
-
-      if (intersects(bonusRect, playerRect)) {
-        clearLowestRow();
+      if (bonus.x > arenaW + 36 || bonus.x + bonus.w < -36) {
         bonus.el.remove();
         bonus = null;
-        return;
-      }
-
-      if (bonus.y > arenaH) {
-        bonus.el.remove();
-        bonus = null;
+        scheduleBonusRun();
       }
     }
 
@@ -1014,6 +996,16 @@
         }
 
         let hit = false;
+        if (bonus && intersects(beam, bonus)) {
+          score += 20;
+          flashArena();
+          bonus.el.remove();
+          bonus = null;
+          beam.el.remove();
+          scheduleBonusRun();
+          updateHUD();
+          continue;
+        }
         for (const enemy of enemies) {
           if (!enemy.alive) continue;
           if (intersects(beam, enemy)) {
@@ -1041,11 +1033,11 @@
     function updateEnemies(delta) {
       const alive = enemies.filter(enemy => enemy.alive);
       if (!alive.length) {
-        if (!waveCleared && wave < 2 && score < TARGET_SCORE) {
+        if (!waveCleared && wave < 2) {
           wave += 1;
           updateHUD();
           spawnWave();
-          spawnBonus();
+          scheduleBonusRun();
           return;
         }
         endGame("cleared");
@@ -1053,7 +1045,7 @@
       }
 
       let hitEdge = false;
-      const speed = enemyBaseSpeed + (wave - 1) * 12;
+      const speed = enemyBaseSpeed + (wave - 1) * 14;
 
       alive.forEach(enemy => {
         enemy.x += enemyDir * speed * delta;
@@ -1068,14 +1060,13 @@
           enemy.x = clamp(enemy.x, 10, arenaW - enemy.w - 10);
           enemy.y += enemyStepDown;
         });
-        spawnBonus();
       }
 
       drawEnemies();
 
       const reachedBottom = alive.some(enemy => enemy.y + enemy.h >= arenaH - 72);
-      if (reachedBottom || score >= TARGET_SCORE) {
-        endGame(reachedBottom ? "advanced" : "cleared");
+      if (reachedBottom) {
+        endGame("advanced");
       }
     }
 
@@ -1093,15 +1084,12 @@
 
       movePlayer(delta);
 
-      autoFireTimer += delta * 1000;
-      if (autoFireTimer >= AUTO_FIRE_MS) {
-        autoFireTimer = 0;
-        fireBeam();
-      }
-
       updateBeams(delta);
       updateEnemies(delta);
       updateBonus(delta);
+      if (!bonus && now >= bonusSpawnAt && now - gameStartedAt >= BONUS_MIN_DELAY) {
+        spawnBonus();
+      }
 
       if (playing) {
         animationFrameId = requestAnimationFrame(gameLoop);
@@ -1122,16 +1110,10 @@
       inviteOverlay.style.display = "flex";
     });
 
-    launchHint.addEventListener("click", () => {
-      if (playing || countdownActive || finished) return;
-      startGame();
-    });
-
     leftBtn.addEventListener("pointerdown", () => setMove(-1));
     rightBtn.addEventListener("pointerdown", () => setMove(1));
     centerBtn.addEventListener("pointerdown", () => {
-      playerX = (arenaW - PLAYER_SIZE) / 2;
-      setMove(0);
+      if (playing) fireBeam();
     });
 
     ["pointerup","pointercancel","pointerleave"].forEach(type => {
@@ -1143,8 +1125,8 @@
     window.addEventListener("keydown", e => {
       if (e.key === "ArrowLeft") setMove(-1);
       if (e.key === "ArrowRight") setMove(1);
-      if ((e.key === " " || e.key === "Enter") && !countdownActive && !finished) {
-        if (!playing) startGame();
+      if ((e.key === " " || e.key === "Enter") && playing) {
+        fireBeam();
       }
     });
 
