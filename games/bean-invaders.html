@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Bean Invaders</title>
+
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <meta property="og:title" content="Bean Invaders">
+  <meta property="og:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
+  <meta property="og:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nchiari.github.io/coffee-party-40/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bean Invaders">
+  <meta name="twitter:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
+  <meta name="twitter:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
+
+  <style>
+    :root{
+      --bg:#f7f3ea;
+      --ink:#17120f;
+      --orange:#ff6b2c;
+      --yellow:#ffe34d;
+      --pink:#ff7ac6;
+      --green:#7ce577;
+      --blue:#52a7ff;
+      --cream:#fff8d8;
+      --card:#fff3f8;
+      --purple:#9d6bff;
+      --space:#151d44;
+      --space2:#0a1129;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+      touch-action:none;
+    }
+
+    html,body{
+      margin:0;
+      height:100%;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      overflow:hidden;
+    }
+
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px;
+    }
+
+    .app{
+      width:min(100%,410px);
+      max-height:calc(100dvh - 20px);
+      border:4px solid #000;
+      border-radius:28px;
+      overflow:hidden;
+      background:#ffef9f;
+      box-shadow:8px 8px 0 #000;
+      position:relative;
+    }
+
+    .header{
+      background:linear-gradient(135deg, #24306d 0%, #3d5df5 56%, #ffe34d 100%);
+      border-bottom:4px solid #000;
+      padding:12px 16px;
+    }
+
+    .title{
+      font-size:30px;
+      line-height:.95;
+      font-weight:1000;
+      text-transform:uppercase;
+      margin-top:4px;
+    }
+
+    .subtitle{
+      margin-top:10px;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.3;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      padding:8px 12px;
+      background:var(--cream);
+      border-bottom:4px solid #000;
+    }
+
+    .stat{
+      background:#fff;
+      border:3px solid #000;
+      border-radius:15px;
+      padding:6px 4px;
+      text-align:center;
+    }
+
+    .stat-label{
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .stat-value{
+      font-size:22px;
+      font-weight:1000;
+      line-height:1.05;
+    }
+
+    .game-wrap{
+      padding:12px;
+      background:var(--blue);
+    }
+
+    .arena{
+      height:min(55vh, 392px);
+      border:4px solid #000;
+      border-radius:22px;
+      overflow:hidden;
+      position:relative;
+      background:
+        radial-gradient(circle at top center, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 35%),
+        radial-gradient(circle at 20% 15%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 18%),
+        linear-gradient(180deg, var(--space) 0%, var(--space2) 100%);
+      transition:transform .06s linear;
+    }
+
+    .arena.flash{
+      transform:scale(.996);
+    }
+
+    .arena::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:
+        radial-gradient(circle at 10% 22%, rgba(255,255,255,.9) 0 1px, transparent 2px),
+        radial-gradient(circle at 26% 68%, rgba(255,255,255,.9) 0 1px, transparent 2px),
+        radial-gradient(circle at 48% 14%, rgba(255,255,255,.8) 0 1px, transparent 2px),
+        radial-gradient(circle at 72% 30%, rgba(255,255,255,.9) 0 1px, transparent 2px),
+        radial-gradient(circle at 90% 55%, rgba(255,255,255,.75) 0 1px, transparent 2px),
+        radial-gradient(circle at 62% 82%, rgba(255,255,255,.8) 0 1px, transparent 2px);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    .beam,
+    .enemy,
+    .player,
+    .bonus{
+      position:absolute;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+
+    .enemy{
+      width:32px;
+      height:32px;
+      font-size:24px;
+      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.24));
+    }
+
+    .bonus{
+      width:28px;
+      height:28px;
+      font-size:21px;
+      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.22));
+    }
+
+    .beam{
+      width:4px;
+      height:18px;
+      border:2px solid #000;
+      border-radius:999px;
+      background:var(--yellow);
+      box-shadow:2px 2px 0 rgba(0,0,0,.18);
+    }
+
+    .player{
+      width:58px;
+      height:40px;
+      font-size:36px;
+      filter:drop-shadow(3px 3px 0 rgba(0,0,0,.26));
+      z-index:3;
+    }
+
+    .launch-hint{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      background:#fff;
+      border:3px solid #000;
+      border-radius:16px;
+      padding:12px 16px;
+      box-shadow:5px 5px 0 #000;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:14px;
+      z-index:8;
+      text-align:center;
+      line-height:1.15;
+      cursor:pointer;
+    }
+
+    .launch-hint.hidden{
+      display:none;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .btn,
+    .control{
+      border:3px solid #000;
+      border-radius:16px;
+      padding:12px 10px;
+      min-height:64px;
+      font-weight:1000;
+      text-transform:uppercase;
+      box-shadow:4px 4px 0 #000;
+      background:#fff;
+      color:#000;
+      cursor:pointer;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .btn:active,
+    .control:active{
+      transform:translate(2px,2px);
+      box-shadow:none;
+    }
+
+    .control{
+      padding:16px 12px;
+    }
+
+    .control:not(.center){
+      font-size:32px;
+      line-height:1;
+      letter-spacing:-1px;
+    }
+
+    .control.center{
+      background:var(--green);
+      font-size:15px;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:20;
+    }
+
+    .panel{
+      width:100%;
+      background:var(--card);
+      border:4px solid #000;
+      border-radius:24px;
+      padding:16px;
+      box-shadow:10px 10px 0 #000;
+    }
+
+    .panel h2{
+      margin:0;
+      font-size:27px;
+      line-height:1;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .icon-badge{
+      width:42px;
+      height:42px;
+      border:3px solid #000;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--yellow);
+      font-size:22px;
+      flex:0 0 auto;
+    }
+
+    .white-card{
+      margin-top:12px;
+      border:3px solid #000;
+      border-radius:18px;
+      background:#fff;
+      padding:12px;
+      box-shadow:4px 4px 0 #000;
+    }
+
+    .howto{
+      margin-top:12px;
+      border:3px solid #000;
+      border-radius:16px;
+      background:#ffef9f;
+      padding:10px;
+      box-shadow:3px 3px 0 #000;
+    }
+
+    .howto p,
+    .white-card p{
+      margin:8px 0 0;
+      font-size:13px;
+      line-height:1.4;
+      font-weight:800;
+    }
+
+    .small-up{
+      font-size:10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+
+    .big-green{
+      width:100%;
+      margin-top:12px;
+      background:var(--green);
+      font-size:15px;
+    }
+
+    .countdown{
+      width:130px;
+      height:130px;
+      border-radius:999px;
+      border:5px solid #000;
+      background:var(--yellow);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:8px 8px 0 #000;
+      font-size:56px;
+      font-weight:1000;
+      animation:pop .45s ease both;
+    }
+
+    @keyframes pop{
+      0%{ transform:scale(.35) rotate(-10deg); opacity:0; }
+      100%{ transform:scale(1) rotate(0); opacity:1; }
+    }
+
+    .gift-btn{
+      background:var(--pink);
+      border:4px solid #000;
+      border-radius:24px;
+      padding:24px 22px;
+      box-shadow:10px 10px 0 #000;
+      text-align:center;
+    }
+
+    .gift-icon{
+      width:88px;
+      height:88px;
+      border-radius:999px;
+      border:4px solid #000;
+      background:var(--yellow);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:44px;
+      animation:wobble 1.8s infinite ease-in-out;
+    }
+
+    @keyframes wobble{
+      0%,100%{ transform:rotate(0) scale(1); }
+      25%{ transform:rotate(-3deg) scale(1.02); }
+      50%{ transform:rotate(3deg) scale(1); }
+      75%{ transform:rotate(-3deg) scale(1.02); }
+    }
+
+    .gift-title{
+      margin-top:14px;
+      font-size:28px;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .gift-sub{
+      margin-top:8px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .invite{
+      width:100%;
+      background:#fff;
+      border:4px solid #000;
+      border-radius:22px;
+      padding:16px;
+      box-shadow:8px 8px 0 #000;
+      animation:reveal .35s ease both;
+    }
+
+    @keyframes reveal{
+      0%{ transform:scale(.55) rotateX(-22deg); opacity:0; }
+      100%{ transform:scale(1) rotateX(0); opacity:1; }
+    }
+
+    .invite-card{
+      margin-top:12px;
+      border:4px solid #000;
+      border-radius:20px;
+      overflow:hidden;
+      background:#ffef9f;
+      box-shadow:5px 5px 0 #000;
+    }
+
+    .invite-top{
+      background:var(--orange);
+      border-bottom:4px solid #000;
+      padding:10px 14px;
+      text-align:center;
+    }
+
+    .invite-body{
+      position:relative;
+      padding:18px 16px;
+      text-align:center;
+      background:radial-gradient(circle at top left,#fff8d8 0%,#ffef9f 45%,#ffd95e 100%);
+    }
+
+    .dot{
+      position:absolute;
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid #000;
+    }
+
+    .d1{ top:10px; left:10px; background:var(--pink); }
+    .d2{ top:10px; right:10px; background:var(--green); }
+    .d3{ bottom:10px; left:10px; background:var(--blue); }
+    .d4{ bottom:10px; right:10px; background:var(--purple); }
+
+    .invite-line1{
+      font-size:15px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+    }
+
+    .invite-line2{
+      margin-top:10px;
+      font-size:28px;
+      font-weight:1000;
+      line-height:1.04;
+    }
+
+    .pill{
+      display:inline-block;
+      margin-top:14px;
+      background:#fff;
+      border:3px solid #000;
+      border-radius:999px;
+      padding:9px 12px;
+      box-shadow:3px 3px 0 #000;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .invite-time{
+      margin-top:14px;
+      font-size:28px;
+      font-weight:1000;
+    }
+
+    .invite-place{
+      margin-top:10px;
+      font-size:34px;
+      font-weight:1000;
+      line-height:1;
+    }
+
+    .invite-note{
+      margin-top:14px;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .post-score{
+      margin-top:12px;
+      text-align:center;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .green{ background:var(--green); }
+    .pink{ background:var(--pink); }
+
+    .unlock-title{
+      font-size:16px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      line-height:1.1;
+      display:flex;
+      align-items:center;
+      min-height:42px;
+    }
+
+    @media (max-height: 700px){
+      .arena{ height:min(49vh, 338px); }
+      .title{ font-size:28px; }
+      .invite-place{ font-size:30px; }
+      .invite-time{ font-size:26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="row">
+        <div style="flex:1">
+          <div class="title">Bean Invaders</div>
+        </div>
+        <div class="icon-badge">🫘</div>
+      </div>
+      <div class="subtitle">Mové tu tacita ☕, dispará rayitos y frená la invasión de granos 🫘 para desbloquear la invitación.</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Puntos</div>
+        <div id="score" class="stat-value">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Oleada</div>
+        <div id="wave" class="stat-value">1</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Récord</div>
+        <div id="best" class="stat-value">0</div>
+      </div>
+    </div>
+
+    <div class="game-wrap">
+      <div id="arena" class="arena">
+        <div id="launchHint" class="launch-hint">Tocá para arrancar</div>
+      </div>
+
+      <div class="controls">
+        <button id="leftBtn" class="control">◀</button>
+        <button id="centerBtn" class="control center">Centro</button>
+        <button id="rightBtn" class="control">▶</button>
+      </div>
+    </div>
+
+    <div id="introOverlay" class="overlay">
+      <div class="panel">
+        <div class="row">
+          <div class="icon-badge">🫘</div>
+          <div>
+            <h2>Coffee Party</h2>
+          </div>
+        </div>
+
+        <div class="white-card">
+          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 🫘</div>
+          <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
+
+          <div class="howto">
+            <div class="small-up">Cómo se juega</div>
+            <p>Mové la tacita ☕ a izquierda o derecha.</p>
+            <p>Dispara sola rayitos, así en mobile solo tenés que esquivar y apuntar.</p>
+            <p>Si limpiás la oleada, genial. Si los granos 🫘 avanzan demasiado, igual se desbloquea la invitación.</p>
+          </div>
+        </div>
+
+        <button id="playBtn" class="btn big-green">Jugar</button>
+      </div>
+    </div>
+
+    <div id="countdownOverlay" class="overlay" style="display:none">
+      <div id="countdownBubble" class="countdown">3</div>
+    </div>
+
+    <div id="giftOverlay" class="overlay" style="display:none">
+      <button id="giftBtn" class="gift-btn">
+        <div class="gift-icon">🎁</div>
+        <div class="gift-title">Regalo desbloqueado</div>
+        <div class="gift-sub">Tocá para abrir la invitación</div>
+        <div id="giftScore" class="gift-sub" style="margin-top:12px">Hiciste 0 puntos</div>
+      </button>
+    </div>
+
+    <div id="inviteOverlay" class="overlay" style="display:none">
+      <div class="invite">
+        <div class="row">
+          <div class="icon-badge">🎁</div>
+          <div style="display:flex;align-items:center;min-height:42px;">
+            <div class="unlock-title">Invitación desbloqueada</div>
+          </div>
+        </div>
+
+        <div class="invite-card">
+          <div class="invite-top">
+            <div class="small-up" style="font-size:12px">Invitación</div>
+          </div>
+
+          <div class="invite-body">
+            <div class="dot d1"></div>
+            <div class="dot d2"></div>
+            <div class="dot d3"></div>
+            <div class="dot d4"></div>
+
+            <div class="invite-line1">Coffee Party</div>
+            <div class="invite-line2">Festejemos mis 40!</div>
+            <div class="pill">Sábado 11 de abril</div>
+            <div class="invite-time">17:30 hs</div>
+            <div class="invite-place">El Pozo de Beriain</div>
+            <div class="invite-note">Te espero para festejarlo con café, algo rico y una tarde de juegos 🧩</div>
+          </div>
+        </div>
+
+        <div id="postScore" class="post-score">Hiciste 0 puntos</div>
+
+        <div class="actions">
+          <button id="playAgainBtn" class="btn green">Jugar de nuevo</button>
+          <a class="btn" href="../index.html">Volver al inicio</a>
+          <a
+            class="btn pink"
+            href="https://wa.link/wfpqej"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="justify-content:center;text-align:center;line-height:1.1;"
+          >
+            Confirmar asistencia
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const arena = document.getElementById("arena");
+    const launchHint = document.getElementById("launchHint");
+
+    const scoreEl = document.getElementById("score");
+    const waveEl = document.getElementById("wave");
+    const bestEl = document.getElementById("best");
+
+    const introOverlay = document.getElementById("introOverlay");
+    const countdownOverlay = document.getElementById("countdownOverlay");
+    const countdownBubble = document.getElementById("countdownBubble");
+    const giftOverlay = document.getElementById("giftOverlay");
+    const inviteOverlay = document.getElementById("inviteOverlay");
+
+    const playBtn = document.getElementById("playBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+    const giftBtn = document.getElementById("giftBtn");
+    const giftScore = document.getElementById("giftScore");
+    const postScore = document.getElementById("postScore");
+
+    const leftBtn = document.getElementById("leftBtn");
+    const centerBtn = document.getElementById("centerBtn");
+    const rightBtn = document.getElementById("rightBtn");
+
+    const PLAYER_SIZE = 58;
+    const ENEMY_SIZE = 32;
+    const BEAM_SPEED = 360;
+    const PLAYER_SPEED = 260;
+    const TARGET_SCORE = 200;
+    const AUTO_FIRE_MS = 430;
+
+    let score = 0;
+    let wave = 1;
+    let best = Number(localStorage.getItem("bean-invaders-best") || 0);
+    let playing = false;
+    let finished = false;
+    let countdownActive = false;
+    let animationFrameId = null;
+    let lastFrame = 0;
+
+    let arenaW = 0;
+    let arenaH = 0;
+    let moveDir = 0;
+    let playerX = 0;
+    let autoFireTimer = 0;
+    let bonus = null;
+    let enemies = [];
+    let beams = [];
+    let enemyDir = 1;
+    let enemyStepDown = 18;
+    let enemyBaseSpeed = 20;
+    let waveCleared = false;
+    let playerEl = null;
+
+    bestEl.textContent = best;
+
+    function flashArena() {
+      arena.classList.add("flash");
+      setTimeout(() => arena.classList.remove("flash"), 60);
+    }
+
+    function updateHUD() {
+      scoreEl.textContent = score;
+      waveEl.textContent = wave;
+      bestEl.textContent = best;
+    }
+
+    function resizeGame() {
+      const rect = arena.getBoundingClientRect();
+      arenaW = rect.width;
+      arenaH = rect.height;
+
+      if (playerX === 0) {
+        playerX = (arenaW - PLAYER_SIZE) / 2;
+      } else {
+        playerX = clamp(playerX, 10, arenaW - PLAYER_SIZE - 10);
+      }
+
+      if (playerEl) {
+        drawPlayer();
+      }
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function createPlayer() {
+      if (playerEl) playerEl.remove();
+      playerEl = document.createElement("div");
+      playerEl.id = "player";
+      playerEl.className = "player";
+      playerEl.textContent = "☕";
+      arena.appendChild(playerEl);
+      drawPlayer();
+    }
+
+    function drawPlayer() {
+      playerEl.style.left = playerX + "px";
+      playerEl.style.top = (arenaH - 52) + "px";
+      playerEl.style.width = PLAYER_SIZE + "px";
+      playerEl.style.height = "40px";
+    }
+
+    function makeEnemy(x, y) {
+      const el = document.createElement("div");
+      el.className = "enemy";
+      el.textContent = "🫘";
+      arena.appendChild(el);
+      return { x, y, w: ENEMY_SIZE, h: ENEMY_SIZE, alive: true, el };
+    }
+
+    function spawnWave() {
+      enemies.forEach(enemy => enemy.el.remove());
+      enemies = [];
+      waveCleared = false;
+      enemyDir = 1;
+      autoFireTimer = 0;
+      bonus = null;
+
+      const cols = 5;
+      const rows = 3;
+      const gapX = 18;
+      const gapY = 16;
+      const totalWidth = cols * ENEMY_SIZE + (cols - 1) * gapX;
+      const startX = Math.max(20, Math.floor((arenaW - totalWidth) / 2));
+      const startY = 26 + (wave - 1) * 4;
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          enemies.push(makeEnemy(
+            startX + col * (ENEMY_SIZE + gapX),
+            startY + row * (ENEMY_SIZE + gapY)
+          ));
+        }
+      }
+    }
+
+    function spawnBonus() {
+      if (bonus || Math.random() > 0.16) return;
+      const el = document.createElement("div");
+      el.className = "bonus";
+      el.textContent = "🍪";
+      arena.appendChild(el);
+      bonus = {
+        x: Math.random() * (arenaW - 40) + 10,
+        y: 40,
+        speed: 66,
+        el
+      };
+    }
+
+    function drawEnemies() {
+      enemies.forEach(enemy => {
+        enemy.el.style.left = enemy.x + "px";
+        enemy.el.style.top = enemy.y + "px";
+        enemy.el.style.display = enemy.alive ? "flex" : "none";
+      });
+    }
+
+    function fireBeam() {
+      const el = document.createElement("div");
+      el.className = "beam";
+      arena.appendChild(el);
+      beams.push({
+        x: playerX + PLAYER_SIZE / 2 - 2,
+        y: arenaH - 58,
+        w: 4,
+        h: 18,
+        el
+      });
+    }
+
+    function drawBeams() {
+      beams.forEach(beam => {
+        beam.el.style.left = beam.x + "px";
+        beam.el.style.top = beam.y + "px";
+      });
+    }
+
+    function removeAllProjectiles() {
+      beams.forEach(beam => beam.el.remove());
+      beams = [];
+      if (bonus) {
+        bonus.el.remove();
+        bonus = null;
+      }
+    }
+
+    function resetState(showIntro = true) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+
+      score = 0;
+      wave = 1;
+      playing = false;
+      finished = false;
+      countdownActive = false;
+      moveDir = 0;
+      playerX = 0;
+      autoFireTimer = 0;
+
+      removeAllProjectiles();
+      enemies.forEach(enemy => enemy.el.remove());
+      enemies = [];
+
+      resizeGame();
+      createPlayer();
+      spawnWave();
+      updateHUD();
+
+      introOverlay.style.display = showIntro ? "flex" : "none";
+      countdownOverlay.style.display = "none";
+      giftOverlay.style.display = "none";
+      inviteOverlay.style.display = "none";
+      launchHint.classList.remove("hidden");
+    }
+
+    function startCountdown() {
+      resetState(false);
+      countdownActive = true;
+      countdownOverlay.style.display = "flex";
+
+      let count = 3;
+      countdownBubble.textContent = count;
+
+      const timer = setInterval(() => {
+        count -= 1;
+        countdownBubble.textContent = count === 0 ? "¡Ya!" : count;
+
+        countdownBubble.style.animation = "none";
+        countdownBubble.offsetHeight;
+        countdownBubble.style.animation = "pop .45s ease both";
+
+        if (count === 0) {
+          clearInterval(timer);
+          setTimeout(() => {
+            countdownOverlay.style.display = "none";
+            countdownActive = false;
+            startGame();
+          }, 500);
+        }
+      }, 700);
+    }
+
+    function startGame() {
+      playing = true;
+      lastFrame = performance.now();
+      launchHint.classList.add("hidden");
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function endGame(reason) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+      playing = false;
+      finished = true;
+      launchHint.classList.add("hidden");
+
+      if (score > best) {
+        best = score;
+        localStorage.setItem("bean-invaders-best", best);
+      }
+      bestEl.textContent = best;
+
+      if (reason === "cleared") {
+        giftScore.textContent = `Hiciste ${score} puntos y frenaste la invasión`;
+        postScore.textContent = `Defendiste la Coffee Party con ${score} puntos`;
+      } else {
+        giftScore.textContent = `Hiciste ${score} puntos y abriste la invitación`;
+        postScore.textContent = `Los granos avanzaron, pero igual desbloqueaste la invitación con ${score} puntos`;
+      }
+
+      giftOverlay.style.display = "flex";
+    }
+
+    function intersects(a, b) {
+      return (
+        a.x < b.x + b.w &&
+        a.x + a.w > b.x &&
+        a.y < b.y + b.h &&
+        a.y + a.h > b.y
+      );
+    }
+
+    function clearLowestRow() {
+      const alive = enemies.filter(enemy => enemy.alive);
+      if (!alive.length) return;
+
+      const maxY = Math.max(...alive.map(enemy => enemy.y));
+      alive.forEach(enemy => {
+        if (enemy.y === maxY) {
+          enemy.alive = false;
+          enemy.el.remove();
+          score += 12;
+        }
+      });
+      flashArena();
+      updateHUD();
+    }
+
+    function updateBonus(delta) {
+      if (!bonus) return;
+
+      bonus.y += bonus.speed * delta;
+      bonus.el.style.left = bonus.x + "px";
+      bonus.el.style.top = bonus.y + "px";
+
+      const bonusRect = { x: bonus.x, y: bonus.y, w: 28, h: 28 };
+      const playerRect = { x: playerX + 8, y: arenaH - 46, w: PLAYER_SIZE - 16, h: 28 };
+
+      if (intersects(bonusRect, playerRect)) {
+        clearLowestRow();
+        bonus.el.remove();
+        bonus = null;
+        return;
+      }
+
+      if (bonus.y > arenaH) {
+        bonus.el.remove();
+        bonus = null;
+      }
+    }
+
+    function updateBeams(delta) {
+      const remaining = [];
+
+      for (const beam of beams) {
+        beam.y -= BEAM_SPEED * delta;
+        if (beam.y < -20) {
+          beam.el.remove();
+          continue;
+        }
+
+        let hit = false;
+        for (const enemy of enemies) {
+          if (!enemy.alive) continue;
+          if (intersects(beam, enemy)) {
+            enemy.alive = false;
+            enemy.el.remove();
+            score += 20;
+            flashArena();
+            hit = true;
+            break;
+          }
+        }
+
+        if (hit) {
+          beam.el.remove();
+        } else {
+          remaining.push(beam);
+        }
+      }
+
+      beams = remaining;
+      drawBeams();
+      updateHUD();
+    }
+
+    function updateEnemies(delta) {
+      const alive = enemies.filter(enemy => enemy.alive);
+      if (!alive.length) {
+        if (!waveCleared && wave < 2 && score < TARGET_SCORE) {
+          wave += 1;
+          updateHUD();
+          spawnWave();
+          spawnBonus();
+          return;
+        }
+        endGame("cleared");
+        return;
+      }
+
+      let hitEdge = false;
+      const speed = enemyBaseSpeed + (wave - 1) * 12;
+
+      alive.forEach(enemy => {
+        enemy.x += enemyDir * speed * delta;
+        if (enemy.x <= 10 || enemy.x + enemy.w >= arenaW - 10) {
+          hitEdge = true;
+        }
+      });
+
+      if (hitEdge) {
+        enemyDir *= -1;
+        alive.forEach(enemy => {
+          enemy.x = clamp(enemy.x, 10, arenaW - enemy.w - 10);
+          enemy.y += enemyStepDown;
+        });
+        spawnBonus();
+      }
+
+      drawEnemies();
+
+      const reachedBottom = alive.some(enemy => enemy.y + enemy.h >= arenaH - 72);
+      if (reachedBottom || score >= TARGET_SCORE) {
+        endGame(reachedBottom ? "advanced" : "cleared");
+      }
+    }
+
+    function movePlayer(delta) {
+      playerX += moveDir * PLAYER_SPEED * delta;
+      playerX = clamp(playerX, 10, arenaW - PLAYER_SIZE - 10);
+      drawPlayer();
+    }
+
+    function gameLoop(now) {
+      if (!playing) return;
+
+      const delta = Math.min((now - lastFrame) / 1000, 0.033);
+      lastFrame = now;
+
+      movePlayer(delta);
+
+      autoFireTimer += delta * 1000;
+      if (autoFireTimer >= AUTO_FIRE_MS) {
+        autoFireTimer = 0;
+        fireBeam();
+      }
+
+      updateBeams(delta);
+      updateEnemies(delta);
+      updateBonus(delta);
+
+      if (playing) {
+        animationFrameId = requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function setMove(value) {
+      moveDir = value;
+      if (value === 0) drawPlayer();
+    }
+
+    playBtn.addEventListener("click", startCountdown);
+    playAgainBtn.addEventListener("click", startCountdown);
+
+    giftBtn.addEventListener("click", () => {
+      giftOverlay.style.display = "none";
+      localStorage.setItem("coffee-party-invite-unlocked", "true");
+      inviteOverlay.style.display = "flex";
+    });
+
+    launchHint.addEventListener("click", () => {
+      if (playing || countdownActive || finished) return;
+      startGame();
+    });
+
+    leftBtn.addEventListener("pointerdown", () => setMove(-1));
+    rightBtn.addEventListener("pointerdown", () => setMove(1));
+    centerBtn.addEventListener("pointerdown", () => {
+      playerX = (arenaW - PLAYER_SIZE) / 2;
+      setMove(0);
+    });
+
+    ["pointerup","pointercancel","pointerleave"].forEach(type => {
+      leftBtn.addEventListener(type, () => { if (moveDir < 0) setMove(0); });
+      rightBtn.addEventListener(type, () => { if (moveDir > 0) setMove(0); });
+      centerBtn.addEventListener(type, () => setMove(0));
+    });
+
+    window.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") setMove(-1);
+      if (e.key === "ArrowRight") setMove(1);
+      if ((e.key === " " || e.key === "Enter") && !countdownActive && !finished) {
+        if (!playing) startGame();
+      }
+    });
+
+    window.addEventListener("keyup", e => {
+      if (e.key === "ArrowLeft" && moveDir < 0) setMove(0);
+      if (e.key === "ArrowRight" && moveDir > 0) setMove(0);
+    });
+
+    window.addEventListener("resize", () => {
+      resizeGame();
+      drawEnemies();
+      drawBeams();
+    });
+
+    resetState(true);
+  </script>
+</body>
+</html>

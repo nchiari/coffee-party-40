@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Arabicanoid</title>
+
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <meta property="og:title" content="Arabicanoid">
+  <meta property="og:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
+  <meta property="og:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nchiari.github.io/coffee-party-40/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Arabicanoid">
+  <meta name="twitter:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
+  <meta name="twitter:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
+
+  <style>
+    :root{
+      --bg:#f7f3ea;
+      --ink:#17120f;
+      --orange:#ff6b2c;
+      --yellow:#ffe34d;
+      --pink:#ff7ac6;
+      --green:#7ce577;
+      --blue:#52a7ff;
+      --cream:#fff8d8;
+      --card:#fff3f8;
+      --purple:#9d6bff;
+
+      --brick1:#d84cff;
+      --brick2:#ffb100;
+      --brick3:#2fe2d1;
+      --brick4:#ff7a59;
+      --brick5:#7ce577;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+      touch-action:none;
+    }
+
+    html,body{
+      margin:0;
+      height:100%;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      overflow:hidden;
+    }
+
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px;
+    }
+
+    .app{
+      width:min(100%,410px);
+      max-height:calc(100dvh - 20px);
+      border:4px solid #000;
+      border-radius:28px;
+      overflow:hidden;
+      background:#ffef9f;
+      box-shadow:8px 8px 0 #000;
+      position:relative;
+    }
+
+    .header{
+      background:var(--orange);
+      border-bottom:4px solid #000;
+      padding:10px 16px 11px;
+    }
+
+    .title{
+      font-size:26px;
+      line-height:.95;
+      font-weight:1000;
+      text-transform:uppercase;
+      margin-top:2px;
+    }
+
+    .subtitle{
+      margin-top:8px;
+      font-size:12px;
+      font-weight:800;
+      line-height:1.25;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      padding:8px 12px;
+      background:var(--cream);
+      border-bottom:4px solid #000;
+    }
+
+    .stat{
+      background:#fff;
+      border:3px solid #000;
+      border-radius:15px;
+      padding:6px 4px;
+      text-align:center;
+    }
+
+    .stat-label{
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .stat-value{
+      font-size:19px;
+      font-weight:1000;
+      line-height:1.05;
+    }
+
+    .lives-value{
+      font-size:16px;
+      letter-spacing:-1px;
+      line-height:1.2;
+      min-height:20px;
+    }
+
+    .game-wrap{
+      padding:12px;
+      background:var(--blue);
+    }
+
+    .arena{
+      height:min(60vh, 455px);
+      border:3px solid #000;
+      border-radius:22px;
+      overflow:hidden;
+      position:relative;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, #dff1ff 35%, #b6dcff 100%);
+      transition:transform .06s linear;
+    }
+
+    .arena.flash{
+      transform:scale(.996);
+    }
+
+    .arena::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,.06) 0 28px,
+          rgba(0,0,0,.03) 28px 30px
+        );
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wall-top{
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      height:6px;
+      background:#000;
+      z-index:10;
+    }
+
+    .wall-left,
+    .wall-right{
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:6px;
+      background:#000;
+      z-index:10;
+    }
+
+    .wall-left{ left:0; }
+    .wall-right{ right:0; }
+
+    .brick{
+      position:absolute;
+      border:3px solid #000;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:1000;
+      z-index:2;
+      overflow:hidden;
+    }
+
+    .brick::before{
+      content:"";
+      position:absolute;
+      left:8px;
+      top:4px;
+      width:14px;
+      height:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.22);
+      transform:rotate(12deg);
+    }
+
+    .brick.b1{ background:var(--brick1); }
+    .brick.b2{ background:var(--brick2); }
+    .brick.b3{ background:var(--brick3); }
+    .brick.b4{ background:var(--brick4); }
+    .brick.b5{ background:var(--brick5); }
+
+    .paddle{
+      position:absolute;
+      height:24px;
+      z-index:6;
+      pointer-events:none;
+    }
+
+    .saucer{
+      position:absolute;
+      inset:0;
+      border:4px solid #000;
+      border-radius:999px;
+      background:
+        linear-gradient(180deg, #fffdf8 0%, #f0e0c3 100%);
+      box-shadow:4px 4px 0 rgba(0,0,0,.14);
+    }
+
+    .saucer::before{
+      content:"";
+      position:absolute;
+      left:10%;
+      right:10%;
+      top:3px;
+      bottom:3px;
+      border:3px solid #000;
+      border-radius:999px;
+      opacity:.16;
+    }
+
+    .saucer::after{
+      content:"";
+      position:absolute;
+      left:18%;
+      top:4px;
+      width:20%;
+      height:42%;
+      border-radius:999px;
+      background:rgba(255,255,255,.45);
+    }
+
+    .ball{
+      position:absolute;
+      width:38px;
+      height:38px;
+      z-index:7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:31px;
+      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.18));
+      pointer-events:none;
+    }
+
+    .launch-hint{
+      position:absolute;
+      left:50%;
+      top:58%;
+      transform:translate(-50%,-50%);
+      background:#fff;
+      border:3px solid #000;
+      border-radius:16px;
+      padding:12px 16px;
+      box-shadow:5px 5px 0 #000;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:14px;
+      z-index:8;
+      text-align:center;
+      line-height:1.15;
+      cursor:pointer;
+    }
+
+    .launch-hint.hidden{
+      display:none;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .btn,
+    .control{
+      border:3px solid #000;
+      border-radius:16px;
+      padding:12px 10px;
+      min-height:64px;
+      font-weight:1000;
+      text-transform:uppercase;
+      box-shadow:4px 4px 0 #000;
+      background:#fff;
+      color:#000;
+      cursor:pointer;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .btn:active,
+    .control:active{
+      transform:translate(2px,2px);
+      box-shadow:none;
+    }
+
+    .control{
+      padding:16px 12px;
+      font-size:32px;
+      line-height:1;
+      min-height:68px;
+    }
+
+    .control.left{
+      background:#fff;
+    }
+
+    .control.right{
+      background:var(--green);
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:20;
+    }
+
+    .panel{
+      width:100%;
+      background:var(--card);
+      border:4px solid #000;
+      border-radius:24px;
+      padding:16px;
+      box-shadow:10px 10px 0 #000;
+    }
+
+    .panel h2{
+      margin:0;
+      font-size:27px;
+      line-height:1;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .icon-badge{
+      width:42px;
+      height:42px;
+      border:3px solid #000;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--yellow);
+      font-size:22px;
+      flex:0 0 auto;
+    }
+
+    .white-card{
+      margin-top:12px;
+      border:3px solid #000;
+      border-radius:18px;
+      background:#fff;
+      padding:12px;
+      box-shadow:4px 4px 0 #000;
+    }
+
+    .howto{
+      margin-top:12px;
+      border:3px solid #000;
+      border-radius:16px;
+      background:#ffef9f;
+      padding:10px;
+      box-shadow:3px 3px 0 #000;
+    }
+
+    .howto p,
+    .white-card p{
+      margin:8px 0 0;
+      font-size:13px;
+      line-height:1.4;
+      font-weight:800;
+    }
+
+    .small-up{
+      font-size:10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+
+    .big-green{
+      width:100%;
+      margin-top:12px;
+      background:var(--green);
+      font-size:15px;
+    }
+
+    .countdown{
+      width:130px;
+      height:130px;
+      border-radius:999px;
+      border:5px solid #000;
+      background:var(--yellow);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:8px 8px 0 #000;
+      font-size:56px;
+      font-weight:1000;
+      animation:pop .45s ease both;
+    }
+
+    @keyframes pop{
+      0%{
+        transform:scale(.35) rotate(-10deg);
+        opacity:0;
+      }
+      100%{
+        transform:scale(1) rotate(0);
+        opacity:1;
+      }
+    }
+
+    .gift-btn{
+      background:var(--pink);
+      border:4px solid #000;
+      border-radius:24px;
+      padding:24px 22px;
+      box-shadow:10px 10px 0 #000;
+      text-align:center;
+    }
+
+    .gift-icon{
+      width:88px;
+      height:88px;
+      border-radius:999px;
+      border:4px solid #000;
+      background:var(--yellow);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:44px;
+      animation:wobble 1.8s infinite ease-in-out;
+    }
+
+    @keyframes wobble{
+      0%,100%{ transform:rotate(0) scale(1); }
+      25%{ transform:rotate(-3deg) scale(1.02); }
+      50%{ transform:rotate(3deg) scale(1); }
+      75%{ transform:rotate(-3deg) scale(1.02); }
+    }
+
+    .gift-title{
+      margin-top:14px;
+      font-size:28px;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .gift-sub{
+      margin-top:8px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .invite{
+      width:100%;
+      background:#fff;
+      border:4px solid #000;
+      border-radius:22px;
+      padding:16px;
+      box-shadow:8px 8px 0 #000;
+      animation:reveal .35s ease both;
+    }
+
+    @keyframes reveal{
+      0%{
+        transform:scale(.55) rotateX(-22deg);
+        opacity:0;
+      }
+      100%{
+        transform:scale(1) rotateX(0);
+        opacity:1;
+      }
+    }
+
+    .invite-card{
+      margin-top:12px;
+      border:4px solid #000;
+      border-radius:20px;
+      overflow:hidden;
+      background:#ffef9f;
+      box-shadow:5px 5px 0 #000;
+    }
+
+    .invite-top{
+      background:var(--orange);
+      border-bottom:4px solid #000;
+      padding:10px 14px;
+      text-align:center;
+    }
+
+    .invite-body{
+      position:relative;
+      padding:18px 16px;
+      text-align:center;
+      background:radial-gradient(circle at top left,#fff8d8 0%,#ffef9f 45%,#ffd95e 100%);
+    }
+
+    .dot{
+      position:absolute;
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid #000;
+    }
+
+    .d1{ top:10px; left:10px; background:var(--pink); }
+    .d2{ top:10px; right:10px; background:var(--green); }
+    .d3{ bottom:10px; left:10px; background:var(--blue); }
+    .d4{ bottom:10px; right:10px; background:var(--purple); }
+
+    .invite-line1{
+      font-size:15px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+    }
+
+    .invite-line2{
+      margin-top:10px;
+      font-size:28px;
+      font-weight:1000;
+      line-height:1.04;
+    }
+
+    .pill{
+      display:inline-block;
+      margin-top:14px;
+      background:#fff;
+      border:3px solid #000;
+      border-radius:999px;
+      padding:9px 12px;
+      box-shadow:3px 3px 0 #000;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .invite-time{
+      margin-top:14px;
+      font-size:28px;
+      font-weight:1000;
+    }
+
+    .invite-place{
+      margin-top:10px;
+      font-size:34px;
+      font-weight:1000;
+      line-height:1;
+    }
+
+    .invite-note{
+      margin-top:14px;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .post-score{
+      margin-top:12px;
+      text-align:center;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .green{ background:var(--green); }
+    .pink{ background:var(--pink); }
+
+    .unlock-title{
+      font-size:16px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      line-height:1.1;
+      display:flex;
+      align-items:center;
+      min-height:42px;
+    }
+
+    @media (max-height: 700px){
+      .arena{
+        height:min(55vh, 400px);
+      }
+
+      .title{
+        font-size:24px;
+      }
+
+      .invite-place{
+        font-size:30px;
+      }
+
+      .invite-time{
+        font-size:26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="row">
+        <div style="flex:1">
+          <div class="title">Arabicanoid</div>
+        </div>
+        <div class="icon-badge">🍒</div>
+      </div>
+      <div class="subtitle">Rebotá la cereza de cafeto arabica 🍒, rompé los bloques y desbloqueá la invitación.</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Puntos</div>
+        <div id="score" class="stat-value">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Vidas</div>
+        <div id="lives" class="stat-value lives-value">🍒🍒🍒</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Récord</div>
+        <div id="best" class="stat-value">0</div>
+      </div>
+    </div>
+
+    <div class="game-wrap">
+      <div id="arena" class="arena">
+        <div class="wall-top"></div>
+        <div class="wall-left"></div>
+        <div class="wall-right"></div>
+
+        <div id="launchHint" class="launch-hint">Tocá para lanzar</div>
+
+        <div id="paddle" class="paddle">
+          <div class="saucer"></div>
+        </div>
+
+        <div id="ball" class="ball">🍒</div>
+      </div>
+
+      <div class="controls">
+        <button id="leftBtn" class="control left">◀</button>
+        <button id="rightBtn" class="control right">▶</button>
+      </div>
+    </div>
+
+    <div id="introOverlay" class="overlay">
+      <div class="panel">
+        <div class="row">
+          <div class="icon-badge">🍒</div>
+          <div>
+            <h2>Coffee Party</h2>
+          </div>
+        </div>
+
+        <div class="white-card">
+          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 🍒</div>
+          <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
+
+          <div class="howto">
+            <div class="small-up">Cómo se juega</div>
+            <p>Mové el plato con las flechas.</p>
+            <p>Tocá el cartel del medio para lanzar la cereza arabica 🍒.</p>
+            <p>La partida es rápida y amable: aunque se escape, la invitación igual se desbloquea.</p>
+          </div>
+        </div>
+
+        <button id="playBtn" class="btn big-green">Jugar</button>
+      </div>
+    </div>
+
+    <div id="countdownOverlay" class="overlay" style="display:none">
+      <div id="countdownBubble" class="countdown">3</div>
+    </div>
+
+    <div id="giftOverlay" class="overlay" style="display:none">
+      <button id="giftBtn" class="gift-btn">
+        <div class="gift-icon">🎁</div>
+        <div class="gift-title">Regalo desbloqueado</div>
+        <div class="gift-sub">Tocá para abrir la invitación</div>
+        <div id="giftScore" class="gift-sub" style="margin-top:12px">Hiciste 0 puntos</div>
+      </button>
+    </div>
+
+    <div id="inviteOverlay" class="overlay" style="display:none">
+      <div class="invite">
+        <div class="row">
+          <div class="icon-badge">🎁</div>
+          <div style="display:flex;align-items:center;min-height:42px;">
+            <div class="unlock-title">Invitación desbloqueada</div>
+          </div>
+        </div>
+
+        <div class="invite-card">
+          <div class="invite-top">
+            <div class="small-up" style="font-size:12px">Invitación</div>
+          </div>
+
+          <div class="invite-body">
+            <div class="dot d1"></div>
+            <div class="dot d2"></div>
+            <div class="dot d3"></div>
+            <div class="dot d4"></div>
+
+            <div class="invite-line1">Coffee Party</div>
+            <div class="invite-line2">Festejemos mis 40!</div>
+            <div class="pill">Sábado 11 de abril</div>
+            <div class="invite-time">17:30 hs</div>
+            <div class="invite-place">El Pozo de Beriain</div>
+            <div class="invite-note">Te espero para festejarlo con café, algo rico y una tarde de juegos 🧩</div>
+          </div>
+        </div>
+
+        <div id="postScore" class="post-score">Lograste 0 puntos</div>
+
+        <div class="actions">
+          <button id="playAgainBtn" class="btn green">Jugar de nuevo</button>
+          <a class="btn" href="../index.html">Volver al inicio</a>
+          <a
+            id="confirmBtn"
+            class="btn pink"
+            href="https://wa.link/wfpqej"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="justify-content:center;text-align:center;line-height:1.1;"
+          >
+            Confirmar asistencia
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const arena = document.getElementById("arena");
+    const paddleEl = document.getElementById("paddle");
+    const ballEl = document.getElementById("ball");
+    const launchHint = document.getElementById("launchHint");
+
+    const scoreEl = document.getElementById("score");
+    const livesEl = document.getElementById("lives");
+    const bestEl = document.getElementById("best");
+
+    const introOverlay = document.getElementById("introOverlay");
+    const countdownOverlay = document.getElementById("countdownOverlay");
+    const countdownBubble = document.getElementById("countdownBubble");
+    const giftOverlay = document.getElementById("giftOverlay");
+    const inviteOverlay = document.getElementById("inviteOverlay");
+
+    const playBtn = document.getElementById("playBtn");
+    const giftBtn = document.getElementById("giftBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+    const leftBtn = document.getElementById("leftBtn");
+    const rightBtn = document.getElementById("rightBtn");
+
+    const giftScore = document.getElementById("giftScore");
+    const postScore = document.getElementById("postScore");
+
+    const PADDLE_W = 112;
+    const PADDLE_H = 24;
+    const BALL_SIZE = 38;
+    const BRICK_COLS = 6;
+    const BRICK_ROWS = 3;
+    const BRICK_H = 20;
+    const BRICK_GAP_X = 5;
+    const BRICK_GAP_Y = 5;
+    const TOP_OFFSET = 22;
+    const SIDE_PADDING = 18;
+    const PADDLE_BOTTOM = 74;
+    const LIVES_START = 3;
+
+    let best = Number(localStorage.getItem("coffee-breakout-best") || 0);
+    let score = 0;
+    let lives = LIVES_START;
+    let bricks = [];
+    let playing = false;
+    let finished = false;
+    let countdownActive = false;
+    let animationFrameId = null;
+    let lastFrame = 0;
+
+    let moveDir = 0;
+    let paddleX = 0;
+    let paddleSpeed = 360;
+
+    let ballX = 0;
+    let ballY = 0;
+    let ballVX = 170;
+    let ballVY = -220;
+    let ballAttached = true;
+
+    let arenaW = 0;
+    let arenaH = 0;
+
+    bestEl.textContent = best;
+
+    function livesToCups(n) {
+      return "🍒".repeat(Math.max(0, n));
+    }
+
+    function resizeGame() {
+      const rect = arena.getBoundingClientRect();
+      arenaW = rect.width;
+      arenaH = rect.height;
+
+      if (paddleX === 0) {
+        paddleX = (arenaW - PADDLE_W) / 2;
+      } else {
+        paddleX = Math.max(8, Math.min(arenaW - PADDLE_W - 8, paddleX));
+      }
+
+      if (ballAttached) {
+        attachBallToPaddle();
+      }
+
+      drawPaddle();
+      drawBall();
+      drawBricks();
+      positionLaunchHint();
+    }
+
+    function positionLaunchHint() {
+      const targetY = arenaH - PADDLE_BOTTOM - PADDLE_H - 72;
+      launchHint.style.top = targetY + "px";
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function flashArena() {
+      arena.classList.add("flash");
+      setTimeout(() => arena.classList.remove("flash"), 60);
+    }
+
+    function attachBallToPaddle() {
+      ballX = paddleX + PADDLE_W / 2 - BALL_SIZE / 2;
+      ballY = arenaH - PADDLE_BOTTOM - PADDLE_H - BALL_SIZE - 4;
+    }
+
+    function drawPaddle() {
+      paddleEl.style.width = PADDLE_W + "px";
+      paddleEl.style.left = paddleX + "px";
+      paddleEl.style.top = (arenaH - PADDLE_BOTTOM - PADDLE_H) + "px";
+    }
+
+    function drawBall() {
+      ballEl.style.left = ballX + "px";
+      ballEl.style.top = ballY + "px";
+    }
+
+    function createBricks() {
+      bricks.forEach(b => b.el.remove());
+      bricks = [];
+
+      const usableW = arenaW - SIDE_PADDING * 2;
+      const brickW = (usableW - BRICK_GAP_X * (BRICK_COLS - 1)) / BRICK_COLS;
+      const classes = ["b1", "b2", "b3", "b4", "b5"];
+
+      for (let row = 0; row < BRICK_ROWS; row++) {
+        for (let col = 0; col < BRICK_COLS; col++) {
+          const x = SIDE_PADDING + col * (brickW + BRICK_GAP_X);
+          const y = TOP_OFFSET + row * (BRICK_H + BRICK_GAP_Y);
+
+          const el = document.createElement("div");
+          el.className = "brick " + classes[(row + col) % classes.length];
+          el.style.left = x + "px";
+          el.style.top = y + "px";
+          el.style.width = brickW + "px";
+          el.style.height = BRICK_H + "px";
+
+          arena.appendChild(el);
+
+          bricks.push({
+            x, y, w: brickW, h: BRICK_H,
+            alive: true,
+            el
+          });
+        }
+      }
+    }
+
+    function drawBricks() {
+      bricks.forEach(brick => {
+        brick.el.style.left = brick.x + "px";
+        brick.el.style.top = brick.y + "px";
+        brick.el.style.width = brick.w + "px";
+        brick.el.style.height = brick.h + "px";
+        brick.el.style.display = brick.alive ? "flex" : "none";
+      });
+    }
+
+    function updateHUD() {
+      scoreEl.textContent = score;
+      livesEl.textContent = livesToCups(lives);
+      bestEl.textContent = best;
+    }
+
+    function resetMatch(showIntro = true) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+
+      playing = false;
+      finished = false;
+      countdownActive = false;
+
+      score = 0;
+      lives = LIVES_START;
+      moveDir = 0;
+
+      resizeGame();
+      paddleX = (arenaW - PADDLE_W) / 2;
+      ballAttached = true;
+      ballVX = 170;
+      ballVY = -220;
+
+      createBricks();
+      attachBallToPaddle();
+      drawPaddle();
+      drawBall();
+      updateHUD();
+
+      introOverlay.style.display = showIntro ? "flex" : "none";
+      countdownOverlay.style.display = "none";
+      giftOverlay.style.display = "none";
+      inviteOverlay.style.display = "none";
+      launchHint.classList.remove("hidden");
+    }
+
+    function startCountdown() {
+      resetMatch(false);
+      countdownActive = true;
+      countdownOverlay.style.display = "flex";
+
+      let count = 3;
+      countdownBubble.textContent = count;
+
+      const timer = setInterval(() => {
+        count -= 1;
+        countdownBubble.textContent = count === 0 ? "¡Ya!" : count;
+
+        countdownBubble.style.animation = "none";
+        countdownBubble.offsetHeight;
+        countdownBubble.style.animation = "pop .45s ease both";
+
+        if (count === 0) {
+          clearInterval(timer);
+          setTimeout(() => {
+            countdownOverlay.style.display = "none";
+            countdownActive = false;
+            startGame();
+          }, 500);
+        }
+      }, 700);
+    }
+
+    function startGame() {
+      playing = true;
+      lastFrame = performance.now();
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function launchBall() {
+      if (!playing || !ballAttached) return;
+      ballAttached = false;
+      launchHint.classList.add("hidden");
+
+      const dir = Math.random() > 0.5 ? 1 : -1;
+      ballVX = 160 * dir;
+      ballVY = -235;
+    }
+
+    function circleRectCollision(cx, cy, r, rect) {
+      const closestX = clamp(cx, rect.x, rect.x + rect.w);
+      const closestY = clamp(cy, rect.y, rect.y + rect.h);
+      const dx = cx - closestX;
+      const dy = cy - closestY;
+      return dx * dx + dy * dy <= r * r;
+    }
+
+    function loseLife() {
+      lives -= 1;
+      updateHUD();
+
+      if (lives <= 0) {
+        endGame(false);
+        return;
+      }
+
+      ballAttached = true;
+      ballVX = 170 * (Math.random() > 0.5 ? 1 : -1);
+      ballVY = -220;
+      attachBallToPaddle();
+      drawBall();
+      launchHint.classList.remove("hidden");
+      positionLaunchHint();
+    }
+
+    function endGame(win) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+
+      playing = false;
+      finished = true;
+      launchHint.classList.add("hidden");
+
+      if (score > best) {
+        best = score;
+        localStorage.setItem("coffee-breakout-best", best);
+        bestEl.textContent = best;
+      }
+
+      if (win) {
+        giftScore.textContent = `Hiciste ${score} puntos`;
+        postScore.textContent = `Lograste ${score} puntos y rompiste todos los bloques`;
+        giftOverlay.style.display = "flex";
+      } else {
+        giftScore.textContent = `Hiciste ${score} puntos y destrabaste la invitación`;
+        postScore.textContent = `La cereza se escapó, pero igual desbloqueaste la invitación con ${score} puntos`;
+        giftOverlay.style.display = "flex";
+      }
+    }
+
+    function movePaddle(delta) {
+      paddleX += moveDir * paddleSpeed * delta;
+      paddleX = clamp(paddleX, 8, arenaW - PADDLE_W - 8);
+      drawPaddle();
+
+      if (ballAttached) {
+        attachBallToPaddle();
+        drawBall();
+      }
+    }
+
+    function gameLoop(now) {
+      if (!playing) return;
+
+      const delta = Math.min((now - lastFrame) / 1000, 0.033);
+      lastFrame = now;
+
+      movePaddle(delta);
+
+      if (ballAttached) {
+        drawBall();
+        animationFrameId = requestAnimationFrame(gameLoop);
+        return;
+      }
+
+      ballX += ballVX * delta;
+      ballY += ballVY * delta;
+
+      const radius = BALL_SIZE / 2;
+      const cx = ballX + radius;
+      const cy = ballY + radius;
+
+      if (ballX <= 6) {
+        ballX = 6;
+        ballVX *= -1;
+        flashArena();
+      }
+
+      if (ballX + BALL_SIZE >= arenaW - 6) {
+        ballX = arenaW - 6 - BALL_SIZE;
+        ballVX *= -1;
+        flashArena();
+      }
+
+      if (ballY <= 6) {
+        ballY = 6;
+        ballVY *= -1;
+        flashArena();
+      }
+
+      const paddleRect = {
+        x: paddleX,
+        y: arenaH - PADDLE_BOTTOM - PADDLE_H,
+        w: PADDLE_W,
+        h: PADDLE_H
+      };
+
+      if (ballVY > 0 && circleRectCollision(cx, cy, radius, paddleRect)) {
+        ballY = paddleRect.y - BALL_SIZE - 1;
+        ballVY = -Math.abs(ballVY);
+
+        const hitPos = ((cx - paddleRect.x) / paddleRect.w) - 0.5;
+        ballVX += hitPos * 220;
+        ballVX = clamp(ballVX, -290, 290);
+      }
+
+      for (const brick of bricks) {
+        if (!brick.alive) continue;
+
+        if (circleRectCollision(cx, cy, radius, brick)) {
+          brick.alive = false;
+          brick.el.style.display = "none";
+
+          score += 10;
+          updateHUD();
+          flashArena();
+
+          const overlapLeft = Math.abs((ballX + BALL_SIZE) - brick.x);
+          const overlapRight = Math.abs(ballX - (brick.x + brick.w));
+          const overlapTop = Math.abs((ballY + BALL_SIZE) - brick.y);
+          const overlapBottom = Math.abs(ballY - (brick.y + brick.h));
+          const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
+          if (minOverlap === overlapLeft || minOverlap === overlapRight) {
+            ballVX *= -1;
+          } else {
+            ballVY *= -1;
+          }
+
+          const remaining = bricks.filter(b => b.alive).length;
+          if (remaining === 0) {
+            endGame(true);
+            return;
+          }
+
+          break;
+        }
+      }
+
+      if (ballY > arenaH + 20) {
+        loseLife();
+      }
+
+      drawBall();
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function setMove(dir) {
+      moveDir = dir;
+    }
+
+    playBtn.addEventListener("click", startCountdown);
+    playAgainBtn.addEventListener("click", startCountdown);
+
+    giftBtn.addEventListener("click", () => {
+      giftOverlay.style.display = "none";
+      localStorage.setItem("coffee-party-invite-unlocked", "true");
+      inviteOverlay.style.display = "flex";
+    });
+
+    function pressLeft(e){
+      e.preventDefault();
+      setMove(-1);
+    }
+
+    function pressRight(e){
+      e.preventDefault();
+      setMove(1);
+    }
+
+    function stopMove(e){
+      if (e) e.preventDefault();
+      setMove(0);
+    }
+
+    leftBtn.addEventListener("pointerdown", pressLeft);
+    rightBtn.addEventListener("pointerdown", pressRight);
+    leftBtn.addEventListener("pointerup", stopMove);
+    rightBtn.addEventListener("pointerup", stopMove);
+    leftBtn.addEventListener("pointercancel", stopMove);
+    rightBtn.addEventListener("pointercancel", stopMove);
+    leftBtn.addEventListener("pointerleave", stopMove);
+    rightBtn.addEventListener("pointerleave", stopMove);
+
+    window.addEventListener("pointerup", stopMove);
+
+    window.addEventListener("keydown", (e) => {
+      if (!playing) return;
+
+      if (e.key === "ArrowLeft") setMove(-1);
+      if (e.key === "ArrowRight") setMove(1);
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        if (ballAttached) launchBall();
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") setMove(0);
+    });
+
+    launchHint.addEventListener("click", () => {
+      if (playing && ballAttached) launchBall();
+    });
+
+    arena.addEventListener("pointerdown", (e) => {
+      if (!playing) return;
+
+      const rect = arena.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+
+      if (ballAttached) {
+        const hintRect = launchHint.getBoundingClientRect();
+        const isHintTap =
+          e.clientX >= hintRect.left &&
+          e.clientX <= hintRect.right &&
+          e.clientY >= hintRect.top &&
+          e.clientY <= hintRect.bottom;
+
+        if (isHintTap) {
+          launchBall();
+          return;
+        }
+      }
+
+      paddleX = clamp(x - PADDLE_W / 2, 8, arenaW - PADDLE_W - 8);
+      drawPaddle();
+
+      if (ballAttached) {
+        attachBallToPaddle();
+        drawBall();
+      }
+    });
+
+    arena.addEventListener("pointermove", (e) => {
+      if (!playing) return;
+
+      const rect = arena.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+
+      paddleX = clamp(x - PADDLE_W / 2, 8, arenaW - PADDLE_W - 8);
+      drawPaddle();
+
+      if (ballAttached) {
+        attachBallToPaddle();
+        drawBall();
+      }
+    });
+
+    window.addEventListener("resize", resizeGame);
+
+    resetMatch(true);
+    setTimeout(resizeGame, 50);
+  </script>
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Coffee Party 40</title>
+  <style>
+    :root{
+      --bg:#f7f3ea;
+      --ink:#17120f;
+      --orange:#ff6b2c;
+      --yellow:#ffe34d;
+      --pink:#ff7ac6;
+      --green:#7ce577;
+      --blue:#52a7ff;
+      --cream:#fff8d8;
+      --card:#fff3f8;
+      --purple:#9d6bff;
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, #fff6cf 0%, #f7f3ea 42%, #ffd2eb 100%);
+      color:var(--ink);
+    }
+
+    body{
+      padding:20px 14px 32px;
+    }
+
+    .shell{
+      width:min(100%, 980px);
+      margin:0 auto;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero,
+    .invite,
+    .games{
+      border:4px solid #000;
+      border-radius:28px;
+      box-shadow:8px 8px 0 #000;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .hero-head,
+    .games-head,
+    .invite-head{
+      border-bottom:4px solid #000;
+      padding:14px 18px;
+      background:var(--orange);
+    }
+
+    .hero-head{
+      background:
+        linear-gradient(135deg, var(--orange) 0%, #ff915a 55%, var(--yellow) 100%);
+    }
+
+    .eyebrow{
+      font-size:11px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+    }
+
+    h1,h2,p{ margin:0; }
+
+    h1{
+      margin-top:8px;
+      font-size:clamp(34px, 9vw, 72px);
+      line-height:.92;
+      text-transform:uppercase;
+      font-weight:1000;
+    }
+
+    .hero-body{
+      display:grid;
+      gap:18px;
+      padding:18px;
+      background:
+        linear-gradient(180deg, #ffef9f 0%, #fff8d8 45%, #fff 100%);
+    }
+
+    .hero-copy{
+      display:grid;
+      gap:12px;
+    }
+
+    .lead{
+      font-size:18px;
+      line-height:1.25;
+      font-weight:1000;
+      max-width:42rem;
+    }
+
+    .support{
+      font-size:14px;
+      line-height:1.45;
+      font-weight:800;
+      max-width:46rem;
+    }
+
+    .badge-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .badge{
+      border:3px solid #000;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:12px;
+      font-weight:1000;
+      background:#fff;
+      box-shadow:4px 4px 0 #000;
+    }
+
+    .badge.locked{ background:var(--pink); }
+    .badge.unlocked{ background:var(--green); }
+
+    .games-body{
+      padding:18px;
+      background:var(--blue);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:14px;
+    }
+
+    .game-link{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    .game-card{
+      min-height:250px;
+      display:grid;
+      grid-template-rows:124px auto;
+      border:4px solid #000;
+      border-radius:24px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:6px 6px 0 #000;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+
+    .game-card:active{
+      transform:translate(2px,2px);
+      box-shadow:3px 3px 0 #000;
+    }
+
+    .thumb{
+      position:relative;
+      overflow:hidden;
+      border-bottom:4px solid #000;
+    }
+
+    .thumb.arabicanoid{
+      background:linear-gradient(180deg, #dff1ff 0%, #9ed2ff 100%);
+    }
+
+    .thumb.puckman{
+      background:radial-gradient(circle at top left, #18224a 0%, #101736 45%, #0a1024 100%);
+    }
+
+    .thumb.catch{
+      background:linear-gradient(180deg, #dff1ff 0%, #b4ebff 100%);
+    }
+
+    .thumb.invaders{
+      background:linear-gradient(180deg, #0e1536 0%, #1f2a65 100%);
+    }
+
+    .brick-row,
+    .bean-row{
+      position:absolute;
+      left:14px;
+      right:14px;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .brick-row{ top:16px; }
+    .bean-row{ top:18px; }
+
+    .brick,
+    .bean-dot{
+      height:18px;
+      border:3px solid #000;
+      border-radius:10px;
+    }
+
+    .brick:nth-child(1){ background:#d84cff; }
+    .brick:nth-child(2){ background:#ffb100; }
+    .brick:nth-child(3){ background:#2fe2d1; }
+    .brick:nth-child(4){ background:#ff7a59; }
+    .brick:nth-child(5){ background:#7ce577; }
+
+    .cherry-ball{
+      position:absolute;
+      left:50%;
+      top:56px;
+      transform:translateX(-50%);
+      font-size:32px;
+    }
+
+    .paddle{
+      position:absolute;
+      left:50%;
+      bottom:16px;
+      width:90px;
+      height:18px;
+      transform:translateX(-50%);
+      border:4px solid #000;
+      border-radius:999px;
+      background:linear-gradient(180deg, #fffdf8 0%, #ead9b9 100%);
+    }
+
+    .maze-line{
+      position:absolute;
+      border:3px solid #7be0ff;
+      border-radius:12px;
+      box-shadow:0 0 0 2px #000 inset;
+    }
+
+    .maze-line.a{ left:16px; top:14px; width:88px; height:24px; }
+    .maze-line.b{ right:16px; top:14px; width:70px; height:24px; }
+    .maze-line.c{ left:16px; bottom:18px; width:82px; height:24px; }
+    .maze-line.d{ right:22px; bottom:18px; width:94px; height:24px; }
+    .maze-line.e{ left:50%; top:42px; width:26px; height:40px; transform:translateX(-50%); }
+
+    .puck,
+    .pellet,
+    .ship{
+      position:absolute;
+      border-radius:999px;
+      border:3px solid #000;
+    }
+
+    .puck{
+      width:30px;
+      height:30px;
+      left:38px;
+      top:52px;
+      background:linear-gradient(180deg, #7d4b25 0%, #4e2c15 100%);
+    }
+
+    .pellet{
+      width:10px;
+      height:10px;
+      background:var(--yellow);
+    }
+
+    .pellet.p1{ left:90px; top:60px; }
+    .pellet.p2{ left:146px; top:34px; }
+    .pellet.p3{ right:52px; bottom:34px; }
+
+    .ghosty{
+      position:absolute;
+      right:36px;
+      top:52px;
+      width:30px;
+      height:30px;
+      border:3px solid #000;
+      border-radius:14px 14px 8px 8px;
+      background:var(--pink);
+      clip-path:polygon(0 100%, 0 25%, 18% 0, 82% 0, 100% 25%, 100% 100%, 80% 84%, 64% 100%, 50% 84%, 36% 100%, 20% 84%);
+    }
+
+    .lane{
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:33.333%;
+      border-right:3px solid rgba(0,0,0,.12);
+    }
+
+    .lane:nth-child(1){ left:0; background:rgba(216,76,255,.22); }
+    .lane:nth-child(2){ left:33.333%; background:rgba(255,177,0,.22); }
+    .lane:nth-child(3){ left:66.666%; background:rgba(47,226,209,.22); border-right:none; }
+
+    .coffee-cup{
+      position:absolute;
+      bottom:12px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:38px;
+    }
+
+    .falling-bean{
+      position:absolute;
+      top:20px;
+      font-size:26px;
+    }
+
+    .falling-bean.b1{ left:18%; }
+    .falling-bean.b2{ left:48%; top:34px; }
+    .falling-bean.b3{ left:74%; top:18px; }
+
+    .bean-dot{
+      background:#ffd95e;
+      height:14px;
+      border-radius:999px;
+    }
+
+    .ship{
+      width:54px;
+      height:26px;
+      left:50%;
+      bottom:14px;
+      transform:translateX(-50%);
+      border-radius:16px 16px 10px 10px;
+      background:linear-gradient(180deg, #7ce577 0%, #26b83f 100%);
+    }
+
+    .ship::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:-12px;
+      width:12px;
+      height:18px;
+      transform:translateX(-50%);
+      border:3px solid #000;
+      border-bottom:none;
+      background:var(--yellow);
+    }
+
+    .card-body{
+      display:grid;
+      gap:10px;
+      padding:14px;
+    }
+
+    .card-title{
+      font-size:24px;
+      line-height:.95;
+      text-transform:uppercase;
+      font-weight:1000;
+    }
+
+    .card-copy{
+      font-size:13px;
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .tag{
+      justify-self:start;
+      border:3px solid #000;
+      border-radius:999px;
+      padding:8px 10px;
+      background:var(--cream);
+      font-size:11px;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .invite{
+      display:none;
+    }
+
+    .invite.show{
+      display:block;
+    }
+
+    .invite-body{
+      padding:18px;
+      display:grid;
+      gap:14px;
+      background:radial-gradient(circle at top left,#fff8d8 0%,#ffef9f 45%,#ffd95e 100%);
+    }
+
+    .invite-card{
+      border:4px solid #000;
+      border-radius:24px;
+      background:#fff;
+      padding:18px;
+      box-shadow:6px 6px 0 #000;
+      display:grid;
+      gap:8px;
+    }
+
+    .invite-title{
+      font-size:28px;
+      line-height:1;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .invite-line{
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .cta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .btn{
+      text-decoration:none;
+      color:#000;
+      border:3px solid #000;
+      border-radius:18px;
+      padding:13px 16px;
+      font-size:14px;
+      font-weight:1000;
+      text-transform:uppercase;
+      box-shadow:4px 4px 0 #000;
+      background:#fff;
+    }
+
+    .btn.green{ background:var(--green); }
+    .btn.pink{ background:var(--pink); }
+
+    @media (max-width: 640px){
+      body{ padding:14px 10px 24px; }
+      .hero-body,
+      .games-body,
+      .invite-body{ padding:14px; }
+      .game-card{ min-height:224px; }
+      .card-title{ font-size:21px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-head">
+        <div class="eyebrow">Invitación interactiva</div>
+        <h1>Coffee Party 40</h1>
+      </div>
+      <div class="hero-body">
+        <div class="hero-copy">
+          <p class="lead">Para desbloquear la invitación, jugá al menos uno de estos minijuegos cafeteros.</p>
+          <p id="heroSupport" class="support">Son cortitos, mobile-friendly y están hechos para jugar, rejugar y entrar al festejo con buena onda.</p>
+        </div>
+        <div class="badge-row">
+          <div id="lockBadge" class="badge locked">Invitación bloqueada</div>
+          <div class="badge">4 accesos</div>
+          <div class="badge">Partidas rápidas</div>
+          <div class="badge">Estética neo brutalism</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="games">
+      <div class="games-head">
+        <div class="eyebrow">Elegí tu juego</div>
+      </div>
+      <div class="games-body">
+        <div class="grid">
+          <a class="game-link" href="games/catch-a-bean.html">
+            <article class="game-card">
+              <div class="thumb catch">
+                <div class="lane"></div>
+                <div class="lane"></div>
+                <div class="lane"></div>
+                <div class="falling-bean b1">🫘</div>
+                <div class="falling-bean b2">🫘</div>
+                <div class="falling-bean b3">🫘</div>
+                <div class="coffee-cup">☕</div>
+              </div>
+              <div class="card-body">
+                <div class="card-title">Catch-A-Bean</div>
+                <div class="card-copy">Atrapá granos a contrarreloj en una partida simple, rápida y perfecta para jugar con una mano.</div>
+                <div class="tag">Listo para jugar</div>
+              </div>
+            </article>
+          </a>
+
+          <a class="game-link" href="games/arabicanoid.html">
+            <article class="game-card">
+              <div class="thumb arabicanoid">
+                <div class="brick-row">
+                  <div class="brick"></div>
+                  <div class="brick"></div>
+                  <div class="brick"></div>
+                  <div class="brick"></div>
+                  <div class="brick"></div>
+                </div>
+                <div class="cherry-ball">🍒</div>
+                <div class="paddle"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-title">Arabicanoid</div>
+                <div class="card-copy">Rebotá la cereza arabica, rompé bloques coloridos y destrabá la invitación sin presión.</div>
+                <div class="tag">Arcade suave</div>
+              </div>
+            </article>
+          </a>
+
+          <a class="game-link" href="games/puck-man.html">
+            <article class="game-card">
+              <div class="thumb puckman">
+                <div class="maze-line a"></div>
+                <div class="maze-line b"></div>
+                <div class="maze-line c"></div>
+                <div class="maze-line d"></div>
+                <div class="maze-line e"></div>
+                <div class="puck"></div>
+                <div class="pellet p1"></div>
+                <div class="pellet p2"></div>
+                <div class="pellet p3"></div>
+                <div class="ghosty"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-title">Puck-Man</div>
+                <div class="card-copy">Guiá un puck de espresso por un laberinto visual, agarrá puntitos y escapá de los fantasmitas.</div>
+                <div class="tag">Laberinto express</div>
+              </div>
+            </article>
+          </a>
+
+          <a class="game-link" href="games/bean-invaders.html">
+            <article class="game-card">
+              <div class="thumb invaders">
+                <div class="bean-row">
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                </div>
+                <div class="bean-row" style="top:48px;">
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                  <div class="bean-dot"></div>
+                </div>
+                <div class="ship"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-title">Bean Invaders</div>
+                <div class="card-copy">Defendé la Coffee Party desde tu tacita, disparando a una oleada de granos rebeldes en versión arcade express.</div>
+                <div class="tag">Nuevo juego</div>
+              </div>
+            </article>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="inviteSection" class="invite">
+      <div class="invite-head">
+        <div class="eyebrow">Desbloqueada</div>
+      </div>
+      <div class="invite-body">
+        <div class="invite-card">
+          <div class="invite-title">Coffee Party</div>
+          <div class="invite-line">Festejemos mis 40!</div>
+          <div class="invite-line">Sábado 11 de abril</div>
+          <div class="invite-line">17:30 hs</div>
+          <div class="invite-line">El Pozo de Beriain</div>
+        </div>
+        <div class="cta">
+          <a class="btn pink" href="https://wa.link/wfpqej" target="_blank" rel="noopener noreferrer">Confirmar asistencia</a>
+          <a class="btn green" href="games/catch-a-bean.html">Jugar otra vez</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const unlocked = localStorage.getItem("coffee-party-invite-unlocked") === "true";
+    const badge = document.getElementById("lockBadge");
+    const inviteSection = document.getElementById("inviteSection");
+    const heroSupport = document.getElementById("heroSupport");
+
+    if (unlocked) {
+      badge.textContent = "Invitación desbloqueada";
+      badge.classList.remove("locked");
+      badge.classList.add("unlocked");
+      inviteSection.classList.add("show");
+      heroSupport.textContent = "Ya destrabaste la invitación. Podés confirmar asistencia o seguir probando los juegos desde esta home.";
+    }
+  </script>
+</body>
+</html>

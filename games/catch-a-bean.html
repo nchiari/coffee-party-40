@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Catch-A-Bean</title>
+
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <meta property="og:title" content="Catch-A-Bean">
+  <meta property="og:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
+  <meta property="og:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nchiari.github.io/coffee-party-40/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Catch-A-Bean">
+  <meta name="twitter:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
+  <meta name="twitter:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
+
+  <style>
+    :root{
+      --bg:#f7f3ea;
+      --ink:#17120f;
+      --orange:#ff6b2c;
+      --yellow:#ffe34d;
+      --pink:#ff7ac6;
+      --green:#7ce577;
+      --blue:#52a7ff;
+      --cream:#fff8d8;
+      --card:#fff3f8;
+      --purple:#9d6bff;
+
+      --lane1:#d84cff;
+      --lane2:#ffb100;
+      --lane3:#2fe2d1;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      height:100%;
+      font-family:Inter,system-ui,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      overflow:hidden;
+    }
+
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px;
+    }
+
+    .app{
+      width:min(100%,410px);
+      max-height:calc(100dvh - 20px);
+      border:4px solid #000;
+      border-radius:28px;
+      overflow:hidden;
+      background:#ffef9f;
+      box-shadow:8px 8px 0 #000;
+      position:relative;
+    }
+
+    .header{
+      background:var(--orange);
+      border-bottom:4px solid #000;
+      padding:12px 16px;
+    }
+
+    .title{
+      font-size:30px;
+      line-height:.95;
+      font-weight:1000;
+      text-transform:uppercase;
+      margin-top:4px;
+    }
+
+    .subtitle{
+      margin-top:10px;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.3;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      padding:8px 12px;
+      background:var(--cream);
+      border-bottom:4px solid #000;
+    }
+
+    .stat{
+      background:#fff;
+      border:3px solid #000;
+      border-radius:15px;
+      padding:6px 4px;
+      text-align:center;
+    }
+
+    .stat-label{
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    .stat-value{
+      font-size:22px;
+      font-weight:1000;
+      line-height:1.05;
+    }
+
+    .game-wrap{
+      padding:12px;
+      background:var(--blue);
+    }
+
+    .arena{
+      height:min(55vh, 390px);
+      border:4px solid #000;
+      border-radius:22px;
+      overflow:hidden;
+      position:relative;
+      background:#dff1ff;
+      transition:transform .06s linear;
+    }
+
+    .arena.flash{
+      transform:scale(.996);
+    }
+
+    .floor{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:17%;
+      background:#c8b29a;
+      border-top:4px solid #000;
+      z-index:1;
+    }
+
+    .lane-bg{
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:33.3334%;
+      z-index:0;
+    }
+
+    .lane-bg.l1{
+      left:0;
+      background:
+        linear-gradient(180deg, rgba(216,76,255,.22) 0%, rgba(168,0,214,.18) 100%);
+    }
+
+    .lane-bg.l2{
+      left:33.3334%;
+      background:
+        linear-gradient(180deg, rgba(255,177,0,.22) 0%, rgba(255,107,0,.18) 100%);
+    }
+
+    .lane-bg.l3{
+      left:66.6668%;
+      background:
+        linear-gradient(180deg, rgba(47,226,209,.22) 0%, rgba(0,191,174,.18) 100%);
+    }
+
+    .lane-bg::after{
+      content:"";
+      position:absolute;
+      top:74px;
+      bottom:0;
+      left:22px;
+      width:18px;
+      border-radius:999px;
+      background:rgba(255,255,255,.17);
+    }
+
+    .pipe{
+      position:absolute;
+      top:0;
+      width:33.3334%;
+      height:76px;
+      z-index:4;
+      pointer-events:none;
+    }
+
+    .pipe .pipe-body{
+      position:absolute;
+      top:-4px;
+      left:4px;
+      right:4px;
+      height:52px;
+      border:4px solid #000;
+      border-bottom:none;
+      background:var(--pipe-color);
+      overflow:hidden;
+    }
+
+    .pipe .pipe-mouth{
+      position:absolute;
+      left:0px;
+      right:0px;
+      bottom:0;
+      height:30px;
+      border:4px solid #000;
+      background:var(--pipe-color);
+      overflow:hidden;
+    }
+
+    .pipe .shine{
+      position:absolute;
+      top:8px;
+      left:28px;
+      width:20px;
+      height:40px;
+      border-radius:999px;
+      background:rgba(255,255,255,.25);
+    }
+
+    .pipe .shine-small{
+      position:absolute;
+      top:6px;
+      left:68px;
+      width:10px;
+      height:28px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+    }
+
+    .pipe.p1{
+      left:0;
+      --pipe-color:linear-gradient(90deg,#9c00cf 0%, #e969ff 50%, #b700e3 100%);
+    }
+
+    .pipe.p2{
+      left:33.3334%;
+      --pipe-color:linear-gradient(90deg,#ff7b00 0%, #ffd43b 50%, #ff9700 100%);
+    }
+
+    .pipe.p3{
+      left:66.6668%;
+      --pipe-color:linear-gradient(90deg,#08b9ac 0%, #38f0dd 50%, #11c7ba 100%);
+    }
+
+    .lane-line{
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:4px;
+      background:rgba(0,0,0,.12);
+      z-index:2;
+    }
+
+    .lane-1{ left:33.33%; }
+    .lane-2{ left:66.66%; }
+
+    .bean{
+      position:absolute;
+      transform:translateX(-50%);
+      font-size:29px;
+      filter:drop-shadow(2px 2px 0 rgba(0,0,0,.22));
+      will-change:top,left;
+      pointer-events:none;
+      z-index:5;
+    }
+
+    .player{
+      position:absolute;
+      bottom:14px;
+      transform:translateX(-50%);
+      font-size:58px;
+      filter:drop-shadow(4px 4px 0 rgba(0,0,0,.22));
+      transition:left .1s ease-out;
+      pointer-events:none;
+      z-index:6;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .btn,
+    .control{
+      border:3px solid #000;
+      border-radius:16px;
+      padding:12px 10px;
+      min-height:64px;
+      font-weight:1000;
+      text-transform:uppercase;
+      box-shadow:4px 4px 0 #000;
+      background:#fff;
+      color:#000;
+      cursor:pointer;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .btn:active,
+    .control:active{
+      transform:translate(2px,2px);
+      box-shadow:none;
+    }
+
+    .control{
+      padding:16px 12px;
+    }
+
+    .control:not(.center){
+      font-size:32px;
+      font-weight:1000;
+      line-height:1;
+      letter-spacing:-1px;
+    }
+
+    .control.center{
+      background:var(--green);
+      font-size:16px;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:20;
+    }
+
+    .panel{
+      width:100%;
+      background:var(--card);
+      border:4px solid #000;
+      border-radius:24px;
+      padding:16px;
+      box-shadow:10px 10px 0 #000;
+    }
+
+    .panel h2{
+      margin:0;
+      font-size:27px;
+      line-height:1;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .icon-badge{
+      width:42px;
+      height:42px;
+      border:3px solid #000;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--yellow);
+      font-size:22px;
+      flex:0 0 auto;
+    }
+
+    .white-card{
+      margin-top:12px;
+      border:3px solid #000;
+      border-radius:18px;
+      background:#fff;
+      padding:12px;
+      box-shadow:4px 4px 0 #000;
+    }
+
+    .howto{
+      margin-top:12px;
+      border:3px solid #000;
+      border-radius:16px;
+      background:#ffef9f;
+      padding:10px;
+      box-shadow:3px 3px 0 #000;
+    }
+
+    .howto p,
+    .white-card p{
+      margin:8px 0 0;
+      font-size:13px;
+      line-height:1.4;
+      font-weight:800;
+    }
+
+    .small-up{
+      font-size:10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+
+    .big-green{
+      width:100%;
+      margin-top:12px;
+      background:var(--green);
+      font-size:15px;
+    }
+
+    .countdown{
+      width:130px;
+      height:130px;
+      border-radius:999px;
+      border:5px solid #000;
+      background:var(--yellow);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:8px 8px 0 #000;
+      font-size:56px;
+      font-weight:1000;
+      animation:pop .45s ease both;
+    }
+
+    @keyframes pop{
+      0%{
+        transform:scale(.35) rotate(-10deg);
+        opacity:0;
+      }
+      100%{
+        transform:scale(1) rotate(0);
+        opacity:1;
+      }
+    }
+
+    .gift-btn{
+      background:var(--pink);
+      border:4px solid #000;
+      border-radius:24px;
+      padding:24px 22px;
+      box-shadow:10px 10px 0 #000;
+      text-align:center;
+    }
+
+    .gift-icon{
+      width:88px;
+      height:88px;
+      border-radius:999px;
+      border:4px solid #000;
+      background:var(--yellow);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:44px;
+      animation:wobble 1.8s infinite ease-in-out;
+    }
+
+    @keyframes wobble{
+      0%,100%{ transform:rotate(0) scale(1); }
+      25%{ transform:rotate(-3deg) scale(1.02); }
+      50%{ transform:rotate(3deg) scale(1); }
+      75%{ transform:rotate(-3deg) scale(1.02); }
+    }
+
+    .gift-title{
+      margin-top:14px;
+      font-size:28px;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .gift-sub{
+      margin-top:8px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .invite{
+      width:100%;
+      background:#fff;
+      border:4px solid #000;
+      border-radius:22px;
+      padding:16px;
+      box-shadow:8px 8px 0 #000;
+      animation:reveal .35s ease both;
+    }
+
+    @keyframes reveal{
+      0%{
+        transform:scale(.55) rotateX(-22deg);
+        opacity:0;
+      }
+      100%{
+        transform:scale(1) rotateX(0);
+        opacity:1;
+      }
+    }
+
+    .invite-card{
+      margin-top:12px;
+      border:4px solid #000;
+      border-radius:20px;
+      overflow:hidden;
+      background:#ffef9f;
+      box-shadow:5px 5px 0 #000;
+    }
+
+    .invite-top{
+      background:var(--orange);
+      border-bottom:4px solid #000;
+      padding:10px 14px;
+      text-align:center;
+    }
+
+    .invite-body{
+      position:relative;
+      padding:18px 16px;
+      text-align:center;
+      background:radial-gradient(circle at top left,#fff8d8 0%,#ffef9f 45%,#ffd95e 100%);
+    }
+
+    .dot{
+      position:absolute;
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid #000;
+    }
+
+    .d1{ top:10px; left:10px; background:var(--pink); }
+    .d2{ top:10px; right:10px; background:var(--green); }
+    .d3{ bottom:10px; left:10px; background:var(--blue); }
+    .d4{ bottom:10px; right:10px; background:var(--purple); }
+
+    .invite-line1{
+      font-size:15px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+    }
+
+    .invite-line2{
+      margin-top:10px;
+      font-size:28px;
+      font-weight:1000;
+      line-height:1.04;
+    }
+
+    .pill{
+      display:inline-block;
+      margin-top:14px;
+      background:#fff;
+      border:3px solid #000;
+      border-radius:999px;
+      padding:9px 12px;
+      box-shadow:3px 3px 0 #000;
+      font-weight:1000;
+      text-transform:uppercase;
+    }
+
+    .invite-time{
+      margin-top:14px;
+      font-size:28px;
+      font-weight:1000;
+    }
+
+    .invite-place{
+      margin-top:10px;
+      font-size:34px;
+      font-weight:1000;
+      line-height:1;
+    }
+
+    .invite-note{
+      margin-top:14px;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .post-score{
+      margin-top:12px;
+      text-align:center;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .green{ background:var(--green); }
+    .pink{ background:var(--pink); }
+
+    .unlock-title{
+      font-size:16px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      line-height:1.1;
+      display:flex;
+      align-items:center;
+      min-height:42px;
+    }
+
+    @media (max-height: 700px){
+      .arena{
+        height:min(49vh, 340px);
+      }
+
+      .title{
+        font-size:28px;
+      }
+
+      .invite-place{
+        font-size:30px;
+      }
+
+      .invite-time{
+        font-size:26px;
+      }
+
+      .pipe{
+        height:70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="row">
+        <div style="flex:1">
+          <div class="title">Catch-A-Bean</div>
+        </div>
+        <div class="icon-badge">☕</div>
+      </div>
+      <div class="subtitle">Mové la taza y atrapá granos de café para desbloquear la invitación.</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Puntos</div>
+        <div id="score" class="stat-value">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Tiempo</div>
+        <div id="time" class="stat-value">20</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Récord</div>
+        <div id="best" class="stat-value">0</div>
+      </div>
+    </div>
+
+    <div class="game-wrap">
+      <div id="arena" class="arena">
+        <div class="lane-bg l1"></div>
+        <div class="lane-bg l2"></div>
+        <div class="lane-bg l3"></div>
+
+        <div class="pipe p1">
+          <div class="pipe-body">
+            <div class="shine"></div>
+            <div class="shine-small"></div>
+          </div>
+          <div class="pipe-mouth"></div>
+        </div>
+
+        <div class="pipe p2">
+          <div class="pipe-body">
+            <div class="shine"></div>
+            <div class="shine-small"></div>
+          </div>
+          <div class="pipe-mouth"></div>
+        </div>
+
+        <div class="pipe p3">
+          <div class="pipe-body">
+            <div class="shine"></div>
+            <div class="shine-small"></div>
+          </div>
+          <div class="pipe-mouth"></div>
+        </div>
+
+        <div class="lane-line lane-1"></div>
+        <div class="lane-line lane-2"></div>
+
+        <div class="floor"></div>
+        <div id="player" class="player">☕</div>
+      </div>
+
+      <div class="controls">
+        <button id="leftBtn" class="control">◀</button>
+        <button id="centerBtn" class="control center">Centro</button>
+        <button id="rightBtn" class="control">▶</button>
+      </div>
+    </div>
+
+    <div id="introOverlay" class="overlay">
+      <div class="panel">
+        <div class="row">
+          <div class="icon-badge">☕</div>
+          <div>
+            <h2>Coffee Party</h2>
+          </div>
+        </div>
+
+        <div class="white-card">
+          <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote ☕</div>
+          <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
+
+          <div class="howto">
+            <div class="small-up">Cómo se juega</div>
+            <p>Tocá los botones para mover la taza a izquierda o derecha.</p>
+            <p>Atrapá la mayor cantidad de granos de café que puedas antes de que se termine el tiempo.</p>
+            <p>Cuando termina la partida, se desbloquea un regalito. Tocalo para abrir la invitación.</p>
+          </div>
+        </div>
+
+        <button id="playBtn" class="btn big-green">Jugar</button>
+      </div>
+    </div>
+
+    <div id="countdownOverlay" class="overlay" style="display:none">
+      <div id="countdownBubble" class="countdown">3</div>
+    </div>
+
+    <div id="giftOverlay" class="overlay" style="display:none">
+      <button id="giftBtn" class="gift-btn">
+        <div class="gift-icon">🎁</div>
+        <div class="gift-title">Regalo desbloqueado</div>
+        <div class="gift-sub">Tocá para abrir la invitación</div>
+        <div id="giftScore" class="gift-sub" style="margin-top:12px">Juntaste 0 granos</div>
+      </button>
+    </div>
+
+    <div id="inviteOverlay" class="overlay" style="display:none">
+      <div class="invite">
+        <div class="row">
+          <div class="icon-badge">🎁</div>
+          <div style="display:flex;align-items:center;min-height:42px;">
+            <div class="unlock-title">Invitación desbloqueada</div>
+          </div>
+        </div>
+
+        <div class="invite-card">
+          <div class="invite-top">
+            <div class="small-up" style="font-size:12px">Invitación</div>
+          </div>
+
+          <div class="invite-body">
+            <div class="dot d1"></div>
+            <div class="dot d2"></div>
+            <div class="dot d3"></div>
+            <div class="dot d4"></div>
+
+            <div class="invite-line1">Coffee Party</div>
+            <div class="invite-line2">Festejemos mis 40!</div>
+            <div class="pill">Sábado 11 de abril</div>
+            <div class="invite-time">17:30 hs</div>
+            <div class="invite-place">El Pozo de Beriain</div>
+            <div class="invite-note">Te espero para festejarlo con café, algo rico y una tarde de juegos 🧩</div>
+          </div>
+        </div>
+
+        <div id="postScore" class="post-score">Atrapaste 0 granos de café</div>
+
+        <div class="actions">
+          <button id="playAgainBtn" class="btn green">Jugar de nuevo</button>
+          <a class="btn" href="../index.html">Volver al inicio</a>
+          <a
+            id="confirmBtn"
+            class="btn pink"
+            href="https://wa.link/wfpqej"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="justify-content:center;text-align:center;line-height:1.1;"
+          >
+            Confirmar asistencia
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const lanes = [16.66, 50, 83.33];
+    const GAME_DURATION = 20;
+    const PLAYER_Y = 78;
+    const MAX_BEANS_ON_SCREEN = 5;
+    const SPAWN_INTERVAL = 560;
+    const BEAN_SPEED_MIN = 24;
+    const BEAN_SPEED_MAX = 34;
+    const PIPE_EXIT_Y = 20;
+
+    const arena = document.getElementById("arena");
+    const player = document.getElementById("player");
+    const scoreEl = document.getElementById("score");
+    const timeEl = document.getElementById("time");
+    const bestEl = document.getElementById("best");
+
+    const introOverlay = document.getElementById("introOverlay");
+    const countdownOverlay = document.getElementById("countdownOverlay");
+    const countdownBubble = document.getElementById("countdownBubble");
+    const giftOverlay = document.getElementById("giftOverlay");
+    const inviteOverlay = document.getElementById("inviteOverlay");
+
+    const playBtn = document.getElementById("playBtn");
+    const centerBtn = document.getElementById("centerBtn");
+    const leftBtn = document.getElementById("leftBtn");
+    const rightBtn = document.getElementById("rightBtn");
+    const giftBtn = document.getElementById("giftBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+
+    const giftScore = document.getElementById("giftScore");
+    const postScore = document.getElementById("postScore");
+
+    let started = false;
+    let finished = false;
+    let lane = 1;
+    let score = 0;
+    let timeLeft = GAME_DURATION;
+    let best = Number(localStorage.getItem("coffee-party-best") || 0);
+    let beans = [];
+    let countdownActive = false;
+    let lastFrame = 0;
+    let animationFrameId = null;
+    let spawnTimer = 0;
+
+    bestEl.textContent = best;
+    updatePlayer();
+
+    function updatePlayer() {
+      player.style.left = lanes[lane] + "%";
+    }
+
+    function renderBeans() {
+      document.querySelectorAll(".bean").forEach(el => el.remove());
+
+      beans.forEach(bean => {
+        const el = document.createElement("div");
+        el.className = "bean";
+        el.textContent = "🫘";
+        el.style.left = lanes[bean.lane] + "%";
+        el.style.top = bean.y + "%";
+        arena.appendChild(el);
+      });
+    }
+
+    function flashArena() {
+      arena.classList.add("flash");
+      setTimeout(() => arena.classList.remove("flash"), 60);
+    }
+
+    function resetState(showIntro = true) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+
+      started = false;
+      finished = false;
+      countdownActive = false;
+      lane = 1;
+      score = 0;
+      timeLeft = GAME_DURATION;
+      beans = [];
+      spawnTimer = 0;
+      lastFrame = 0;
+
+      updatePlayer();
+      renderBeans();
+
+      scoreEl.textContent = score;
+      timeEl.textContent = Math.ceil(timeLeft);
+
+      introOverlay.style.display = showIntro ? "flex" : "none";
+      countdownOverlay.style.display = "none";
+      giftOverlay.style.display = "none";
+      inviteOverlay.style.display = "none";
+
+      centerBtn.textContent = "Centro";
+    }
+
+    function startCountdown() {
+      resetState(false);
+      countdownActive = true;
+      countdownOverlay.style.display = "flex";
+
+      let count = 3;
+      countdownBubble.textContent = count;
+
+      const timer = setInterval(() => {
+        count -= 1;
+        countdownBubble.textContent = count === 0 ? "¡Ya!" : count;
+
+        countdownBubble.style.animation = "none";
+        countdownBubble.offsetHeight;
+        countdownBubble.style.animation = "pop .45s ease both";
+
+        if (count === 0) {
+          clearInterval(timer);
+          setTimeout(() => {
+            countdownOverlay.style.display = "none";
+            countdownActive = false;
+            startGame();
+          }, 500);
+        }
+      }, 700);
+    }
+
+    function startGame() {
+      started = true;
+      finished = false;
+      centerBtn.textContent = "Centro";
+      lastFrame = performance.now();
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function spawnBean() {
+      if (beans.length >= MAX_BEANS_ON_SCREEN) return;
+
+      beans.push({
+        id: Math.random().toString(36).slice(2, 9),
+        lane: Math.floor(Math.random() * 3),
+        y: PIPE_EXIT_Y,
+        speed: BEAN_SPEED_MIN + Math.random() * (BEAN_SPEED_MAX - BEAN_SPEED_MIN)
+      });
+    }
+
+    function gameLoop(now) {
+      if (!started) return;
+
+      const delta = Math.min((now - lastFrame) / 1000, 0.033);
+      lastFrame = now;
+
+      timeLeft -= delta;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        endGame();
+        return;
+      }
+
+      spawnTimer += delta * 1000;
+      if (spawnTimer >= SPAWN_INTERVAL) {
+        spawnTimer = 0;
+        spawnBean();
+      }
+
+      let caught = 0;
+      const remaining = [];
+
+      for (const bean of beans) {
+        bean.y += bean.speed * delta;
+
+        const sameLane = bean.lane === lane;
+        const insideCatchZone = bean.y >= PLAYER_Y - 6 && bean.y <= PLAYER_Y + 3;
+
+        if (sameLane && insideCatchZone) {
+          caught += 1;
+        } else if (bean.y < 96) {
+          remaining.push(bean);
+        }
+      }
+
+      beans = remaining;
+
+      if (caught > 0) {
+        score += caught;
+        scoreEl.textContent = score;
+        flashArena();
+      }
+
+      timeEl.textContent = Math.ceil(timeLeft);
+      renderBeans();
+
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+
+      started = false;
+      finished = true;
+      centerBtn.textContent = "Jugar";
+
+      if (score > best) {
+        best = score;
+        localStorage.setItem("coffee-party-best", best);
+        bestEl.textContent = best;
+      }
+
+      giftScore.textContent = `Juntaste ${score} granos`;
+      postScore.textContent = `Atrapaste ${score} granos de café`;
+      giftOverlay.style.display = "flex";
+    }
+
+    function moveLeft() {
+      if (lane > 0) lane -= 1;
+      updatePlayer();
+    }
+
+    function moveRight() {
+      if (lane < 2) lane += 1;
+      updatePlayer();
+    }
+
+    playBtn.addEventListener("click", startCountdown);
+
+    centerBtn.addEventListener("click", () => {
+      if (started) {
+        lane = 1;
+        updatePlayer();
+      } else if (!countdownActive) {
+        startCountdown();
+      }
+    });
+
+    leftBtn.addEventListener("click", moveLeft);
+    rightBtn.addEventListener("click", moveRight);
+
+    giftBtn.addEventListener("click", () => {
+      giftOverlay.style.display = "none";
+      localStorage.setItem("coffee-party-invite-unlocked", "true");
+      inviteOverlay.style.display = "flex";
+    });
+
+    playAgainBtn.addEventListener("click", startCountdown);
+
+    window.addEventListener("keydown", (e) => {
+      if (!started) return;
+      if (e.key === "ArrowLeft") moveLeft();
+      if (e.key === "ArrowRight") moveRight();
+    });
+
+    resetState(true);
+  </script>
+</body>
+</html>
