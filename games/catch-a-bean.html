@@ -386,10 +386,10 @@
 
     .howto-title{
       margin-top:12px;
-      font-size:10px;
+      font-size:14px;
       font-weight:1000;
       text-transform:uppercase;
-      letter-spacing:.1em;
+      letter-spacing:.04em;
     }
 
     .white-card p{
@@ -716,7 +716,7 @@
           <div style="font-size:16px;font-weight:1000;line-height:1.2">Hay una invitación esperándote 🫘</div>
           <p>Si querés descubrir cuándo y dónde va a ser la Coffee Party por mis 40, jugá una partida cortita y desbloqueala al final.</p>
           <div class="howto-title">Cómo se juega</div>
-          <p>Tocá los botones o arrastrá la taza para moverla a izquierda o derecha.</p>
+          <p>Tocá los botones para mover la taza a izquierda o derecha.</p>
           <p>Atrapá la mayor cantidad de granos de café que puedas antes de que se termine el tiempo.</p>
         </div>
 
@@ -1025,35 +1025,6 @@
       if (!started) return;
       if (e.key === "ArrowLeft") moveLeft();
       if (e.key === "ArrowRight") moveRight();
-    });
-
-    function moveFromPointer(clientX) {
-      const rect = arena.getBoundingClientRect();
-      const relativeX = clientX - rect.left;
-      const clamped = Math.max(0, Math.min(rect.width, relativeX));
-      playerX = 12 + (clamped / rect.width) * 76;
-      const nearestLane = lanes.reduce((bestIndex, laneValue, index) => {
-        return Math.abs(laneValue - playerX) < Math.abs(lanes[bestIndex] - playerX) ? index : bestIndex;
-      }, 0);
-      lane = nearestLane;
-      updatePlayer();
-    }
-
-    let touchDragging = false;
-
-    arena.addEventListener("pointerdown", (e) => {
-      if (!started) return;
-      touchDragging = true;
-      moveFromPointer(e.clientX);
-    });
-
-    arena.addEventListener("pointermove", (e) => {
-      if (!started || !touchDragging) return;
-      moveFromPointer(e.clientX);
-    });
-
-    window.addEventListener("pointerup", () => {
-      touchDragging = false;
     });
 
     resetState(true);

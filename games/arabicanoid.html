@@ -395,10 +395,10 @@
 
     .howto-title{
       margin-top:12px;
-      font-size:10px;
+      font-size:14px;
       font-weight:1000;
       text-transform:uppercase;
-      letter-spacing:.1em;
+      letter-spacing:.04em;
     }
 
     .white-card p{
@@ -805,10 +805,10 @@
     const BRICK_GAP_Y = 5;
     const TOP_OFFSET = 22;
     const SIDE_PADDING = 18;
-    const PADDLE_BOTTOM = 74;
+    const PADDLE_BOTTOM = 46;
     const LIVES_START = 3;
-    const BASE_BALL_SPEED = 285;
-    const MAX_BALL_SPEED = 390;
+    const BASE_BALL_SPEED = 300;
+    const MAX_BALL_SPEED = 520;
     const BONUS_DROP_SPEED = 315;
 
     let best = Number(localStorage.getItem("coffee-breakout-best") || 0);
@@ -884,7 +884,7 @@
       const total = BRICK_ROWS * BRICK_COLS;
       const remaining = getRemainingBricks() || total;
       const clearedRatio = 1 - remaining / total;
-      return Math.min(MAX_BALL_SPEED, BASE_BALL_SPEED + clearedRatio * 105);
+      return Math.min(MAX_BALL_SPEED, BASE_BALL_SPEED + clearedRatio * 240);
     }
 
     function normalizeBallSpeed(target = getTargetBallSpeed()) {
