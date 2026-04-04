@@ -882,9 +882,11 @@
 
     function getTargetBallSpeed() {
       const total = BRICK_ROWS * BRICK_COLS;
-      const remaining = getRemainingBricks() || total;
-      const clearedRatio = 1 - remaining / total;
-      return Math.min(MAX_BALL_SPEED, BASE_BALL_SPEED + clearedRatio * 240);
+      const remaining = getRemainingBricks();
+      const cleared = total - remaining;
+      const stageSize = Math.max(1, Math.round(total / 3));
+      const speedStage = Math.min(2, Math.floor(cleared / stageSize));
+      return Math.min(MAX_BALL_SPEED, BASE_BALL_SPEED * Math.pow(1.3, speedStage));
     }
 
     function normalizeBallSpeed(target = getTargetBallSpeed()) {
