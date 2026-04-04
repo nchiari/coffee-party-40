@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Bean Invaders</title>
+  <title>Cup Invaders</title>
 
   <link rel="icon" type="image/png" href="/favicon.png">
 
-  <meta property="og:title" content="Bean Invaders">
+  <meta property="og:title" content="Cup Invaders">
   <meta property="og:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
   <meta property="og:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nchiari.github.io/coffee-party-40/">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Bean Invaders">
+  <meta name="twitter:title" content="Cup Invaders">
   <meta name="twitter:description" content="Festejemos mis 40! • Sábado 11 de abril • 17:30 hs • El Pozo de Beriain">
   <meta name="twitter:image" content="https://nchiari.github.io/coffee-party-40/favicon.png">
 
@@ -551,7 +551,7 @@
     <div class="header">
       <div class="row">
         <div style="flex:1">
-          <div class="title">Bean Invaders</div>
+          <div class="title">Cup Invaders</div>
         </div>
         <div class="icon-badge">👾</div>
       </div>
@@ -699,7 +699,7 @@
 
     let score = 0;
     let wave = 1;
-    let best = Number(localStorage.getItem("bean-invaders-best") || 0);
+    let best = Number(localStorage.getItem("cup-invaders-best") || localStorage.getItem("bean-invaders-best") || 0);
     let playing = false;
     let finished = false;
     let countdownActive = false;
@@ -939,7 +939,7 @@
 
       if (score > best) {
         best = score;
-        localStorage.setItem("bean-invaders-best", best);
+        localStorage.setItem("cup-invaders-best", best);
       }
       bestEl.textContent = best;
 

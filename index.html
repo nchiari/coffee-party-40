@@ -522,7 +522,7 @@
             </article>
           </a>
 
-          <a class="game-link" href="games/bean-invaders.html">
+          <a class="game-link" href="games/cup-invaders.html">
             <article class="game-card">
                 <div class="thumb invaders">
                 <div class="bean-row r1">
@@ -535,7 +535,7 @@
               </div>
               <div class="card-body">
                 <div class="title-row">
-                  <div class="card-title">Bean Invaders</div>
+                  <div class="card-title">Cup Invaders</div>
                   <div id="record-invaders" class="record">Récord: 0</div>
                 </div>
                 <div class="card-copy">Defendé la Coffee Party oleada tras oleada y bajá aliens antes de que alcancen tu taza.</div>
@@ -576,7 +576,7 @@
       "record-catch": Number(localStorage.getItem("coffee-party-best") || 0),
       "record-arabicanoid": Number(localStorage.getItem("coffee-breakout-best") || 0),
       "record-puckman": Number(localStorage.getItem("coffee-pacman-best") || 0),
-      "record-invaders": Number(localStorage.getItem("bean-invaders-best") || 0)
+      "record-invaders": Number(localStorage.getItem("cup-invaders-best") || localStorage.getItem("bean-invaders-best") || 0)
     };
 
     Object.entries(recordMap).forEach(([id, value]) => {

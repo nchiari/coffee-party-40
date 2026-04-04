@@ -5,7 +5,7 @@
 - `Arabicanoid`
 - `Puck-Man`
 - `Catch-A-Bean`
-- `Bean Invaders`
+- `Cup Invaders`
 
 Todo el proyecto está hecho en HTML, CSS y JavaScript vanilla. No requiere build, dependencias ni instalación.
 
@@ -15,7 +15,7 @@ Todo el proyecto está hecho en HTML, CSS y JavaScript vanilla. No requiere buil
 - `games/arabicanoid.html`: versión cafetera de un rompebloques.
 - `games/puck-man.html`: laberinto estilo arcade.
 - `games/catch-a-bean.html`: juego de reflejos para atrapar granos.
-- `games/bean-invaders.html`: shooter arcade con temática café.
+- `games/cup-invaders.html`: shooter arcade con temática café.
 
 ## Cómo abrirlo
 
